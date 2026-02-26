@@ -5,6 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import Script from 'next/script';
+import toast from 'react-hot-toast';
 
 const SC_PACKS = [
     { title: 'Starter Pack', sc: 50, price: 500, label: 'Standard top-up' },
@@ -41,6 +42,7 @@ export default function WalletPage() {
     }, [isAuthenticated, isLoading, router, user, refreshUser]);
 
     const handleBuyPack = async (packIndex: number) => {
+        if (!user) return;
         if (!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) {
             alert("Razorpay is not configured yet. This is a mockup of the flow.");
             return;
@@ -54,7 +56,11 @@ export default function WalletPage() {
             const response = await fetch('/api/razorpay', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ amount: pack.price })
+                body: JSON.stringify({
+                    amount: pack.price,
+                    user_id: user.id,
+                    sc_amount: pack.sc
+                })
             });
             const data = await response.json();
 
@@ -68,29 +74,18 @@ export default function WalletPage() {
                 order_id: data.order.id,
                 handler: async function (response: any) {
                     // Payment successful
+                    // The backend Razorpay Webhook will automatically verify the signature
+                    // and credit the user's SC balance within a few seconds.
 
-                    // In a real app, verify signature on backend:
-                    // response.razorpay_payment_id, response.razorpay_order_id, response.razorpay_signature
+                    toast.success(`Successfully purchased ${pack.sc} SC! Your balance will update shortly.`, {
+                        duration: 5000,
+                    });
 
-                    // Credit SC to user
-                    const updatedBalance = (user?.sc_balance || 0) + pack.sc;
-
-                    await supabase
-                        .from('users')
-                        .update({ sc_balance: updatedBalance })
-                        .eq('id', user?.id);
-
-                    await supabase
-                        .from('transactions')
-                        .insert([{
-                            user_id: user?.id,
-                            amount: pack.sc,
-                            tx_type: 'purchase',
-                            description: `Purchased ${pack.title}`
-                        }]);
-
-                    refreshUser(); // Update balance in UI
-                    alert(`Successfully purchased ${pack.sc} SC!`);
+                    // Wait a moment for webhook to process, then refresh
+                    setTimeout(() => {
+                        refreshUser();
+                        router.refresh();
+                    }, 2500);
                 },
                 prefill: {
                     name: user?.name,
@@ -103,13 +98,13 @@ export default function WalletPage() {
 
             const rzp = new (window as any).Razorpay(options);
             rzp.on('payment.failed', function (response: any) {
-                alert(response.error.description);
+                toast.error(response.error.description);
             });
             rzp.open();
 
         } catch (error) {
             console.error("Payment failed", error);
-            alert("Something went wrong with the payment gateway.");
+            toast.error("Something went wrong with the payment gateway.");
         } finally {
             setIsRecharging(null);
         }
@@ -173,7 +168,7 @@ export default function WalletPage() {
                                         <div key={tx.id} className="flex justify-between items-center p-4 bg-white/5 border border-white/5 rounded-xl">
                                             <div className="flex items-center gap-4">
                                                 <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${tx.tx_type === 'purchase' || tx.tx_type === 'earned' || tx.tx_type === 'escrow_release' ? 'bg-green-500/20 text-green-400'
-                                                        : 'bg-red-500/20 text-red-400'
+                                                    : 'bg-red-500/20 text-red-400'
                                                     }`}>
                                                     {tx.tx_type === 'purchase' || tx.tx_type === 'earned' || tx.tx_type === 'escrow_release' ? (
                                                         <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path></svg>
@@ -222,8 +217,8 @@ export default function WalletPage() {
                                             onClick={() => handleBuyPack(idx)}
                                             disabled={isRecharging === idx}
                                             className={`w-full py-3 rounded-xl font-medium transition-all ${pack.highlight
-                                                    ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]'
-                                                    : 'bg-white/5 hover:bg-white/10 text-white border border-white/10'
+                                                ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]'
+                                                : 'bg-white/5 hover:bg-white/10 text-white border border-white/10'
                                                 }`}
                                         >
                                             {isRecharging === idx ? 'Processing...' : `Buy for ₹${pack.price}`}

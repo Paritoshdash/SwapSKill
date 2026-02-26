@@ -40,34 +40,19 @@ export default function BookSessionPage({ params }: { params: { id: string } }) 
         if (!user || !skill) return;
         setIsBooking(true);
 
-        // Deduct SC from User Balance (MVP logic)
-        const updatedBalance = (user.sc_balance || 0) - scRequired;
+        const { error } = await supabase.rpc('book_session', {
+            p_seeker_id: user.id,
+            p_provider_id: skill.provider_id,
+            p_skill_id: skill.id,
+            p_sc_cost: scRequired
+        });
 
-        await supabase
-            .from('users')
-            .update({ sc_balance: updatedBalance })
-            .eq('id', user.id);
-
-        // Create Session in Escrow
-        await supabase
-            .from('sessions')
-            .insert([{
-                seeker_id: user.id,
-                provider_id: skill.provider_id,
-                skill_id: skill.id,
-                sc_held_in_escrow: scRequired,
-                status: 'pending'
-            }]);
-
-        // Insert Transaction record
-        await supabase
-            .from('transactions')
-            .insert([{
-                user_id: user.id,
-                amount: scRequired,
-                tx_type: 'escrow_hold',
-                description: `Escrow hold for booking ${skill.title}`
-            }]);
+        if (error) {
+            console.error("Booking failed:", error);
+            alert("Booking failed: " + error.message);
+            setIsBooking(false);
+            return;
+        }
 
         await refreshUser(); // Update context balance
         setIsBooking(false);

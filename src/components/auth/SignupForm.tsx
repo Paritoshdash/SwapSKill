@@ -7,6 +7,8 @@ import { useAuth } from '@/context/AuthContext';
 import Image from 'next/image';
 import { createClient } from '@/utils/supabase/client';
 
+import toast from 'react-hot-toast';
+
 export function SignupForm() {
     const [isLoading, setIsLoading] = useState(false);
     const [profilePicBase64, setProfilePicBase64] = useState<string | null>(null);
@@ -41,31 +43,38 @@ export function SignupForm() {
             const { data: authData, error: authError } = await supabase.auth.signUp({
                 email,
                 password,
+                options: {
+                    data: {
+                        name,
+                        profile_pic: profilePicBase64 || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`,
+                        tagline,
+                        bio
+                    }
+                }
             });
 
             if (authError) throw authError;
 
             if (authData.user) {
-                const { error: dbError } = await supabase.from('users').insert([{
-                    id: authData.user.id,
-                    email,
-                    name,
-                    tagline,
-                    bio,
-                    profile_pic: profilePicBase64 || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`
-                }]);
+                // The Postgres trigger `on_auth_user_created` will automatically insert the user into the `public.users` table.
 
-                if (dbError) {
-                    console.error("DB Error on Insert", JSON.stringify(dbError, null, 2));
-                    throw dbError;
-                }
+                // Also update the bio and tagline using a standard update (since the trigger doesn't map those custom fields yet)
+                await supabase.from('users').update({
+                    bio,
+                    tagline
+                }).eq('id', authData.user.id);
 
                 await refreshUser();
+                toast.success('Account created successfully!');
                 router.push('/profile');
             }
         } catch (error: any) {
-            console.error("Caught exact error:", JSON.stringify(error, null, 2));
-            alert(error.message || error.details || error.hint || "Signup failed. See console for details.");
+            console.error("Signup error:", error);
+            if (error.code === 'over_email_send_rate_limit') {
+                toast.error("Supabase rate limit reached. Please disable 'Confirm email' in your Supabase Auth settings to test without limits.", { duration: 6000 });
+            } else {
+                toast.error(error.message || error.details || "Signup failed. Please try again.");
+            }
         } finally {
             setIsLoading(false);
         }

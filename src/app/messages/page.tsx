@@ -16,6 +16,11 @@ export default function MessagesPage() {
     const [isMobileChatView, setIsMobileChatView] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
 
+    // Rating Modal State
+    const [showRatingModal, setShowRatingModal] = useState(false);
+    const [rating, setRating] = useState(5);
+    const [reviewComment, setReviewComment] = useState('');
+
     useEffect(() => {
         if (!isLoading && !isAuthenticated) {
             router.push('/login');
@@ -49,45 +54,38 @@ export default function MessagesPage() {
 
     const activeSession = sessions.find(s => s.id === activeSessionId);
 
-    const handleReleaseEscrow = async () => {
+    const handleReleaseEscrowAndRate = async () => {
         if (!activeSession) return;
         setIsProcessing(true);
 
-        // 1. Update Session Status
-        await supabase
-            .from('sessions')
-            .update({ status: 'completed' })
-            .eq('id', activeSession.id);
+        const { error: escrowError } = await supabase.rpc('release_escrow', {
+            p_session_id: activeSession.id
+        });
 
-        // 2. Fetch Provider's current balance
-        const { data: providerData } = await supabase
-            .from('users')
-            .select('sc_balance')
-            .eq('id', activeSession.provider_id)
-            .single();
+        if (escrowError) {
+            console.error("Escrow release failed:", escrowError);
+            alert("Failed to release escrow: " + escrowError.message);
+            setIsProcessing(false);
+            return;
+        }
 
-        const providerBalance = providerData?.sc_balance || 0;
-        const escrowAmount = activeSession.sc_held_in_escrow;
+        // Insert Review
+        const { error: reviewError } = await supabase.from('reviews').insert([{
+            session_id: activeSession.id,
+            reviewer_id: user.id,
+            reviewee_id: activeSession.provider_id,
+            rating: rating,
+            comment: reviewComment
+        }]);
 
-        // 3. Add escrow amount to Provider's balance
-        await supabase
-            .from('users')
-            .update({ sc_balance: providerBalance + escrowAmount })
-            .eq('id', activeSession.provider_id);
-
-        // 4. Record Transaction
-        await supabase
-            .from('transactions')
-            .insert([{
-                user_id: activeSession.provider_id,
-                amount: escrowAmount,
-                tx_type: 'escrow_release',
-                description: `Escrow released for ${activeSession.skills.title}`
-            }]);
+        if (reviewError) {
+            console.error("Review failed but escrow released:", reviewError);
+        }
 
         // Update local state
         setSessions(sessions.map(s => s.id === activeSession.id ? { ...s, status: 'completed' } : s));
         setIsProcessing(false);
+        setShowRatingModal(false);
         refreshUser();
     };
 
@@ -157,11 +155,10 @@ export default function MessagesPage() {
                                             </div>
                                         ) : activeSession.seeker_id === user.id ? (
                                             <button
-                                                onClick={handleReleaseEscrow}
-                                                disabled={isProcessing}
+                                                onClick={() => setShowRatingModal(true)}
                                                 className="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-3 rounded-xl transition-all shadow-lg"
                                             >
-                                                {isProcessing ? 'Processing...' : 'Mark Complete & Release Escrow'}
+                                                Mark Complete & Rate Session
                                             </button>
                                         ) : (
                                             <div className="text-blue-400 bg-blue-500/10 px-4 py-3 rounded-xl border border-blue-500/20">
@@ -184,6 +181,52 @@ export default function MessagesPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Rating Modal */}
+            {showRatingModal && activeSession && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+                    <div className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-8 max-w-md w-full animate-fade-in-up">
+                        <h3 className="text-2xl font-bold text-white mb-2">Rate your Session</h3>
+                        <p className="text-gray-400 mb-6">How was your experience learning {activeSession.skills.title}?</p>
+
+                        <div className="flex justify-center gap-2 mb-6">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                                <button
+                                    key={star}
+                                    onClick={() => setRating(star)}
+                                    className={`text-4xl transition-transform hover:scale-110 ${rating >= star ? 'text-yellow-400' : 'text-gray-600'}`}
+                                >
+                                    ★
+                                </button>
+                            ))}
+                        </div>
+
+                        <textarea
+                            value={reviewComment}
+                            onChange={(e) => setReviewComment(e.target.value)}
+                            placeholder="Leave an optional review..."
+                            className="w-full bg-black/50 border border-white/10 rounded-xl p-4 text-white placeholder-gray-500 mb-6 focus:outline-none focus:border-blue-500"
+                            rows={3}
+                        />
+
+                        <div className="flex gap-4">
+                            <button
+                                onClick={() => setShowRatingModal(false)}
+                                className="flex-1 py-3 px-4 bg-white/5 hover:bg-white/10 text-white font-medium rounded-xl transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleReleaseEscrowAndRate}
+                                disabled={isProcessing}
+                                className="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-xl transition-all shadow-lg text-sm"
+                            >
+                                {isProcessing ? 'Processing...' : 'Submit & Release'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

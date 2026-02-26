@@ -5,6 +5,8 @@ import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { AuthProvider } from "@/context/AuthContext";
 
+import { Toaster } from "react-hot-toast";
+
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -36,6 +38,17 @@ export default function RootLayout({
           <div className="flex-1 overflow-x-hidden">
             {children}
           </div>
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              className: "bg-[#1a1a1a] text-white border border-white/10",
+              style: {
+                background: '#1a1a1a',
+                color: '#fff',
+                border: '1px solid rgba(255,255,255,0.1)',
+              }
+            }}
+          />
         </AuthProvider>
       </body>
     </html>
