@@ -10,9 +10,11 @@ export default function SkillsPage() {
     const [allSkills, setAllSkills] = useState<Skill[]>([]);
 
     useEffect(() => {
-        // Initialize mock backend if empty, then fetch latest data
-        storage.initializeData();
-        setAllSkills(storage.getSkills());
+        const fetchSkills = async () => {
+            const skills = await storage.getSkills();
+            setAllSkills(skills);
+        };
+        fetchSkills();
     }, []);
 
     // Header State

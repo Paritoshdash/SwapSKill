@@ -8,31 +8,33 @@ import { useAuth } from '@/context/AuthContext';
 export function LoginForm() {
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
-    const { login } = useAuth();
+    // We don't need `login` from AuthContext here anymore because Supabase manages session
+    // and AuthContext just listens to onAuthStateChange.
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsLoading(true);
 
         const formData = new FormData(e.currentTarget);
-        const emailOrUser = formData.get('email') as string || 'alex@example.com';
-        const nameFallback = emailOrUser.split('@')[0];
+        const email = formData.get('email') as string;
+        const password = formData.get('password') as string;
 
-        const mockUser = {
-            id: 'user_' + Math.random().toString(36).substr(2, 9),
-            name: nameFallback.charAt(0).toUpperCase() + nameFallback.slice(1),
-            email: emailOrUser,
-            tagline: 'Passionate Developer',
-            bio: 'I love building React applications and swapping knowledge with others!',
-            profilePic: `https://ui-avatars.com/api/?name=${nameFallback}&background=random`
-        };
+        const { createClient } = await import('@/utils/supabase/client');
+        const supabase = createClient();
 
-        // Simulate API call, then login and redirect to home
-        setTimeout(() => {
-            setIsLoading(false);
-            login(mockUser);
+        const { error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
+
+        setIsLoading(false);
+
+        if (error) {
+            alert(error.message); // In a real app we'd use a toast component
+        } else {
             router.push('/');
-        }, 1500);
+        }
     };
 
     return (

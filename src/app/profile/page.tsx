@@ -9,7 +9,7 @@ import { storage } from '@/lib/storage';
 import { Skill } from '@/components/skills/SkillsGrid';
 
 export default function ProfilePage() {
-    const { user, isAuthenticated, isLoading, updateUser } = useAuth();
+    const { user, isAuthenticated, isLoading, updateProfile } = useAuth();
     const router = useRouter();
     const [activeTab, setActiveTab] = useState<'offered' | 'learning' | 'reviews' | 'settings'>('offered');
     const [userSkills, setUserSkills] = useState<Skill[]>([]);
@@ -21,17 +21,24 @@ export default function ProfilePage() {
             const reader = new FileReader();
             reader.onloadend = () => {
                 const base64String = reader.result as string;
-                updateUser({ profilePic: base64String });
+                updateProfile({ profilePic: base64String });
             };
             reader.readAsDataURL(file);
         }
     };
 
     useEffect(() => {
+        const fetchSkills = async () => {
+            if (user) {
+                const skills = await storage.getUserSkills(user.id);
+                setUserSkills(skills);
+            }
+        };
+
         if (!isLoading && !isAuthenticated) {
             router.push('/login');
         } else if (user) {
-            setUserSkills(storage.getUserSkills(user.id));
+            fetchSkills();
         }
     }, [isAuthenticated, isLoading, router, user]);
 
@@ -54,7 +61,7 @@ export default function ProfilePage() {
                                 className="w-32 h-32 md:w-40 md:h-40 relative rounded-full overflow-hidden border-4 border-[#1a1a1a] shadow-xl group cursor-pointer bg-[#111]"
                             >
                                 <Image
-                                    src={user.profilePic}
+                                    src={user.profilePic || `https://ui-avatars.com/api/?name=${user.name}&background=random`}
                                     alt={user.name}
                                     fill
                                     className="object-cover transition-transform duration-500 group-hover:scale-110"

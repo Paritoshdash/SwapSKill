@@ -9,7 +9,7 @@ import { useAuth } from '@/context/AuthContext';
 export function Navbar() {
     const pathname = usePathname();
     const isAuthPage = pathname === '/login' || pathname === '/signup';
-    const { isAuthenticated, logout, isLoading } = useAuth();
+    const { isAuthenticated, signOut, isLoading } = useAuth();
 
     // Animation Stages: 0: hidden, 1: small logo pill, 2: expanded full width
     const [stage, setStage] = useState(0);
@@ -62,6 +62,10 @@ export function Navbar() {
                         {!isLoading && isAuthenticated && (
                             <>
                                 <Link href="/profile" className="px-3 py-2 text-sm font-medium hover:text-white text-gray-200 transition-colors rounded-3xl hover:bg-white/10">Profile</Link>
+                                <Link href="/wallet" className="px-3 py-2 text-sm font-medium hover:text-white text-emerald-400 transition-colors rounded-3xl hover:bg-white/10 flex items-center gap-1">
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                                    Wallet
+                                </Link>
                                 <Link href="/offer-skill" className="px-3 py-2 text-sm font-medium hover:text-white text-gray-200 transition-colors rounded-3xl hover:bg-white/10">Offer Skill</Link>
                                 <Link href="/messages" className="px-3 py-2 text-sm font-medium hover:text-white text-gray-200 transition-colors rounded-3xl hover:bg-white/10 relative flex items-center">
                                     Messages
@@ -80,10 +84,10 @@ export function Navbar() {
                     {!isLoading && (
                         isAuthenticated ? (
                             <button
-                                onClick={logout}
+                                onClick={signOut}
                                 className="px-5 py-2 mr-2 text-sm font-medium bg-red-500/10 hover:bg-red-500/20 text-red-500 hover:text-red-400 border border-red-500/20 transition-colors rounded-3xl hidden sm:block"
                             >
-                                Logout
+                                Sign out
                             </button>
                         ) : (
                             <>

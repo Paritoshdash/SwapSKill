@@ -1,6 +1,9 @@
 import React from 'react';
 
+import { useRouter } from 'next/navigation';
+
 interface SkillCardProps {
+    id: string | number;
     title: string;
     provider: string;
     rating: number;
@@ -11,9 +14,13 @@ interface SkillCardProps {
     imageUrl?: string;
 }
 
-export function SkillCard({ title, provider, rating, price, category, type, duration, imageUrl }: SkillCardProps) {
+export function SkillCard({ id, title, provider, rating, price, category, type, duration, imageUrl }: SkillCardProps) {
+    const router = useRouter();
     return (
-        <div className="group relative w-full h-80 bg-[#1a1a1a] rounded-[2rem] border border-white/10 overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] cursor-pointer">
+        <div
+            onClick={() => router.push(`/book/${id}`)}
+            className="group relative w-full h-80 bg-[#1a1a1a] rounded-[2rem] border border-white/10 overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] cursor-pointer"
+        >
             {/* 3D Hover Effect Background */}
             <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0"></div>
 

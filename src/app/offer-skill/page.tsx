@@ -17,7 +17,7 @@ export default function OfferSkillPage() {
         }
     }, [isAuthenticated, isLoading, router]);
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsSubmitting(true);
 
@@ -26,25 +26,19 @@ export default function OfferSkillPage() {
         if (user) {
             const newSkill = {
                 title: formData.get('title') as string,
-                provider: user.name,
-                providerId: user.id,
-                rating: 0, // start with 0 rating
-                price: formData.get('swapTerms') as string,
+                providerId: user.id, // provider mapped to user.name internally
+                rating: 0,
                 category: formData.get('category') as string,
                 type: formData.get('format') as 'Online' | 'Offline',
-                duration: 'Negotiable', // Placeholder default
-                createdAt: new Date().toISOString(),
-                // Also could store 'description' if we add it to the Skill interface later or expand it
+                duration_hours: 1, // Defaulting for MVP
+                sc_cost: 10,      // Defaulting for MVP
             };
 
-            // Save to mock backend
-            storage.addSkill(newSkill);
+            await storage.addSkill(newSkill);
         }
 
-        setTimeout(() => {
-            setIsSubmitting(false);
-            router.push('/skills');
-        }, 1500);
+        setIsSubmitting(false);
+        router.push('/skills');
     };
 
     if (isLoading || !isAuthenticated) return null; // Avoid flashing content while redirecting

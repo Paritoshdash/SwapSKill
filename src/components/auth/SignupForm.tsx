@@ -5,13 +5,15 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Image from 'next/image';
+import { createClient } from '@/utils/supabase/client';
 
 export function SignupForm() {
     const [isLoading, setIsLoading] = useState(false);
     const [profilePicBase64, setProfilePicBase64] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
-    const { login } = useAuth();
+    const { refreshUser } = useAuth();
+    const supabase = createClient();
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -24,31 +26,49 @@ export function SignupForm() {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsLoading(true);
 
         const formData = new FormData(e.currentTarget);
         const name = formData.get('name') as string || 'John Doe';
         const email = formData.get('email') as string || 'john@example.com';
+        const password = formData.get('password') as string;
         const tagline = formData.get('tagline') as string || 'Enthusiastic Learner';
         const bio = formData.get('bio') as string || 'Ready to swap skills.';
 
-        const userData = {
-            id: 'user_' + Math.random().toString(36).substr(2, 9),
-            name,
-            email,
-            tagline,
-            bio,
-            profilePic: profilePicBase64 || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`
-        };
+        try {
+            const { data: authData, error: authError } = await supabase.auth.signUp({
+                email,
+                password,
+            });
 
-        // Simulate API call, then login and redirect to profile
-        setTimeout(() => {
+            if (authError) throw authError;
+
+            if (authData.user) {
+                const { error: dbError } = await supabase.from('users').insert([{
+                    id: authData.user.id,
+                    email,
+                    name,
+                    tagline,
+                    bio,
+                    profile_pic: profilePicBase64 || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`
+                }]);
+
+                if (dbError) {
+                    console.error("DB Error on Insert", JSON.stringify(dbError, null, 2));
+                    throw dbError;
+                }
+
+                await refreshUser();
+                router.push('/profile');
+            }
+        } catch (error: any) {
+            console.error("Caught exact error:", JSON.stringify(error, null, 2));
+            alert(error.message || error.details || error.hint || "Signup failed. See console for details.");
+        } finally {
             setIsLoading(false);
-            login(userData);
-            router.push('/profile');
-        }, 1500);
+        }
     };
 
     return (
