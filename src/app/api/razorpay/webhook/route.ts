@@ -3,14 +3,14 @@ import crypto from 'crypto';
 import { createClient } from '@supabase/supabase-js';
 import { checkRateLimit } from '@/utils/rateLimit';
 
-// We must use the service role key to bypass RLS securely in backend webhooks
-const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-);
-
 export async function POST(req: Request) {
     try {
+        // We must use the service role key to bypass RLS securely in backend webhooks
+        const supabaseAdmin = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+            process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+        );
+
         const ip = req.headers.get('x-forwarded-for') || 'anon';
         const rateLimit = checkRateLimit(`rzp_webhook_${ip}`, 20, 60000); // Higher limit for webhooks but still protected
 
