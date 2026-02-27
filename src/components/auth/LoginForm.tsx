@@ -52,6 +52,7 @@ export function LoginForm() {
                     </div>
                     <input
                         type="text"
+                        name="email"
                         required
                         className="w-full bg-[#111] border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
                         placeholder="you@example.com"
@@ -77,6 +78,7 @@ export function LoginForm() {
                     </div>
                     <input
                         type="password"
+                        name="password"
                         required
                         className="w-full bg-[#111] border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
                         placeholder="••••••••"

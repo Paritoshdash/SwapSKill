@@ -5,7 +5,8 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 
-export default function BookSessionPage({ params }: { params: { id: string } }) {
+export default function BookSessionPage({ params }: { params: Promise<{ id: string }> }) {
+    const resolvedParams = React.use(params);
     const { user, isAuthenticated, isLoading, refreshUser } = useAuth();
     const router = useRouter();
     const [skill, setSkill] = useState<any>(null);
@@ -24,7 +25,7 @@ export default function BookSessionPage({ params }: { params: { id: string } }) 
             const { data } = await supabase
                 .from('skills')
                 .select('*, provider:users!provider_id(name)')
-                .eq('id', params.id)
+                .eq('id', resolvedParams.id)
                 .single();
 
             if (data) {
@@ -34,7 +35,7 @@ export default function BookSessionPage({ params }: { params: { id: string } }) 
         };
 
         if (isAuthenticated) fetchSkillDetails();
-    }, [isAuthenticated, isLoading, router, params.id]);
+    }, [isAuthenticated, isLoading, router, resolvedParams.id]);
 
     const handleBooking = async () => {
         if (!user || !skill) return;
