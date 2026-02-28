@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
 
 export function LoginForm() {
     const [isLoading, setIsLoading] = useState(false);
@@ -54,7 +53,7 @@ export function LoginForm() {
                         type="text"
                         name="email"
                         required
-                        className="w-full bg-[#111] border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+                        className="w-full bg-[var(--bg-section)] border border-[var(--divider)] rounded-xl py-3 pl-11 pr-4 text-text-main placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
                         placeholder="you@example.com"
                     />
                 </div>
@@ -90,10 +89,10 @@ export function LoginForm() {
             <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-3 rounded-xl transition-all shadow-lg hover:shadow-blue-500/25 flex justify-center items-center gap-2 group relative overflow-hidden disabled:opacity-70"
+                className="w-full bg-primary hover:bg-secondary text-[#121212] font-semibold py-3 rounded-xl transition-all shadow-[0_0_15px_rgba(245,178,26,0.3)] hover:shadow-[0_0_25px_rgba(229,142,0,0.5)] flex justify-center items-center gap-2 group relative overflow-hidden disabled:opacity-70 active:scale-[0.98]"
             >
                 {isLoading ? (
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    <div className="w-5 h-5 border-2 border-black/30 border-t-[#121212] rounded-full animate-spin"></div>
                 ) : (
                     <>
                         <span>Sign In</span>
@@ -121,9 +120,9 @@ export function LoginForm() {
                 </button>
             </div>
 
-            <p className="text-center text-sm text-gray-400 mt-6">
-                Don't have an account?{' '}
-                <Link href="/signup" className="text-white hover:text-blue-400 transition-colors font-medium">
+            <p className="text-center text-sm text-text-muted mt-6">
+                Don&apos;t have an account?{' '}
+                <Link href="/signup" className="text-text-main hover:text-primary transition-colors font-medium">
                     Sign up now
                 </Link>
             </p>

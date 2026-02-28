@@ -1,25 +1,43 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fcfaf8;
-  --foreground: #111111;
-  --dot-color: rgba(0, 0, 0, 0.08);
+  /* Lightning Yellow Brand Colors */
+  --primary: #F5B21A;
+  --secondary: #E58E00;
+  --success: #f7ca5e;
+  /* Lighter yellow tint */
+
+  /* Dark Background Base */
+  --bg-base: #121212;
+  --bg-section: #1C1C1C;
+  --bg-card: #1C1C1C;
+  --bg-footer: #0E0E0E;
+
+  /* Neutral Text and Borders */
+  --text-main: #EDEDED;
+  --text-muted: #AFAFAF;
+  --divider: #2A2A2A;
+
+  --font-inter: var(--font-inter);
+  --font-poppins: var(--font-poppins);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-success: var(--success);
+  --color-background: var(--bg-base);
+  --color-foreground: var(--text-main);
+  --color-muted: var(--text-muted);
+  --color-divider: var(--divider);
+  --color-section: var(--bg-section);
+
   --font-sans: var(--font-inter);
-  --font-serif: var(--font-playfair);
+  --font-heading: var(--font-poppins);
 }
 
-
-
 body {
-  background-color: var(--background);
-  color: var(--foreground);
-  background-image: radial-gradient(var(--dot-color) 1.5px, transparent 1.5px);
-  background-size: 36px 36px;
-  background-position: 0 0;
+  background-color: var(--bg-base);
+  color: var(--text-main);
   overflow-x: hidden;
 }

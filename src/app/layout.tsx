@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 // import { TopAlertBar } from "@/components/layout/TopAlertBar";
 import { Navbar } from "@/components/layout/Navbar";
@@ -12,9 +12,10 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+const poppins = Poppins({
+  variable: "--font-poppins",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -30,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body
-        className={`${inter.variable} ${playfair.variable} font-sans antialiased flex flex-col min-h-screen`}
+        className={`${inter.variable} ${poppins.variable} font-sans antialiased flex flex-col min-h-screen bg-[var(--bg-base)] text-text-main`}
       >
         <AuthProvider>
           {/* <TopAlertBar /> */}
@@ -43,9 +44,9 @@ export default function RootLayout({
             toastOptions={{
               className: "bg-[#1a1a1a] text-white border border-white/10",
               style: {
-                background: '#1a1a1a',
-                color: '#fff',
-                border: '1px solid rgba(255,255,255,0.1)',
+                background: 'var(--bg-card)',
+                color: 'var(--text-main)',
+                border: '1px solid var(--divider)',
               }
             }}
           />

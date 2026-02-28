@@ -1,36 +1,17 @@
 import { HeroSection } from '@/components/home/HeroSection';
-import { SocialProof } from '@/components/home/SocialProof';
-import { ProblemSolution } from '@/components/home/ProblemSolution';
-import { FeaturesGrid } from '@/components/home/FeaturesGrid';
-import { HowItWorks } from '@/components/home/HowItWorks';
-import { Testimonials } from '@/components/home/Testimonials';
-import { FinalCTA } from '@/components/home/FinalCTA';
+import { BentoContent } from '@/components/home/BentoContent';
 import { Footer } from '@/components/layout/Footer';
-import { BackgroundAnimation } from '@/components/home/BackgroundAnimation';
 
 export default function Home() {
   return (
-    <>
-      {/* Fixed Background Animation Layer */}
-      <BackgroundAnimation />
-
-      {/* Main Foreground Layer */}
-      <main className="relative z-10 min-h-screen">
+    <div className="min-h-screen bg-[var(--bg-base)] selection:bg-primary/30 selection:text-primary pb-20 font-sans">
+      <main className="px-4 md:px-8 max-w-[1700px] mx-auto pt-24">
         <HeroSection />
-
-        {/* The sections that scroll over the background will have a semi-transparent blur effect */}
-        <div className="border-t border-transparent">
-          <SocialProof />
-          <ProblemSolution />
-          <FeaturesGrid />
-          <HowItWorks />
-          <Testimonials />
-          <FinalCTA />
-        </div>
       </main>
-      <div className="relative z-10 bg-white">
+      <BentoContent />
+      <div className="relative z-10 bg-[var(--bg-footer)]">
         <Footer />
       </div>
-    </>
+    </div>
   );
 }

@@ -26,9 +26,16 @@ export function BackgroundAnimation() {
 
             img.onload = () => {
                 loadedCount++;
+                const currentFrame = Math.round(canvasAnimationProgress.current.frame);
+
+                // If this is the absolute first frame to finish downloading (often NOT index 0!), 
+                // draw it immediately so the user isn't staring at a blank teal background container!
                 if (loadedCount === 1) {
-                    drawFrame(0);
+                    drawFrame(i - 1);
                 }
+
+                // In addition, always attempt to draw the true target frame just in case it's what finished downloading.
+                drawFrame(currentFrame);
             };
             images.push(img);
         }
@@ -72,8 +79,9 @@ export function BackgroundAnimation() {
             const canvas = canvasRef.current;
             const container = containerRef.current;
             if (canvas && container) {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
+                const rect = container.getBoundingClientRect();
+                canvas.width = rect.width;
+                canvas.height = rect.height;
                 drawFrame(Math.round(canvasAnimationProgress.current.frame));
             }
         };
@@ -107,10 +115,10 @@ export function BackgroundAnimation() {
     }, { scope: containerRef });
 
     return (
-        <div ref={containerRef} className="fixed inset-0 w-full h-full z-[-1] bg-white overflow-hidden pointer-events-none">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none opacity-100 rounded-[40px] md:rounded-[60px]">
             <canvas
                 ref={canvasRef}
-                className="w-full h-full object-cover mix-blend-multiply opacity-100"
+                className="w-full h-full object-cover opacity-100 contrast-110 saturate-110 filter"
             />
         </div>
     );
