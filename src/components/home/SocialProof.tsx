@@ -2,7 +2,7 @@ import React from 'react';
 
 export function SocialProof() {
     return (
-        <section className="py-16 border-y border-black/5 bg-white/20 backdrop-blur-sm relative z-10 w-full h-full flex flex-col justify-center">
+        <section className="py-16 border-y border-transparent bg-transparent relative z-10 w-full h-full flex flex-col justify-center">
             <div className="max-w-6xl mx-auto px-6 text-center w-full">
                 <p className="text-sm font-semibold text-gray-500 mb-10 uppercase tracking-widest">
                     Trusted by learners and professionals from

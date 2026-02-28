@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/Button';
 
 export function FinalCTA() {
     return (
-        <section className="py-32 px-6 bg-[#111111] text-white overflow-hidden relative w-full h-full flex flex-col justify-center items-center">
+        <section className="py-32 px-6 bg-transparent text-white drop-shadow-md overflow-hidden relative w-full h-full flex flex-col justify-center items-center">
             {/* Premium Subtle Gradient Background */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[800px] h-[400px] bg-[#fb8a9f]/10 blur-[100px] rounded-full pointer-events-none"></div>
 

@@ -30,7 +30,7 @@ const features = [
 
 export function FeaturesGrid() {
     return (
-        <section id="features" className="py-24 bg-[#111111] text-white px-6 w-full h-full flex flex-col justify-center">
+        <section id="features" className="py-24 bg-transparent text-white drop-shadow-md px-6 w-full h-full flex flex-col justify-center">
             <div className="max-w-6xl mx-auto w-full">
                 <div className="text-center md:text-left mb-16 md:mb-24">
                     <h2 className="text-4xl md:text-6xl font-serif tracking-tight mb-6">
@@ -57,7 +57,7 @@ export function FeaturesGrid() {
 
                     {/* Empty callout card to balance the 5-item grid */}
                     <div className="p-8 rounded-2xl bg-gradient-to-br from-[#2a2a2a] to-[#111111] border border-white/10 flex flex-col justify-center items-center text-center">
-                        <h3 className="text-xl font-serif italic mb-4">"The fastest way to learn is to teach."</h3>
+                        <h3 className="text-xl font-serif italic mb-4">&quot;The fastest way to learn is to teach.&quot;</h3>
                         <span className="text-sm text-gray-400 uppercase tracking-widest font-semibold">— SwapSkill Philosophy</span>
                     </div>
                 </div>
