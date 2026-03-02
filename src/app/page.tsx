@@ -1,15 +1,99 @@
-import { HeroSection } from '@/components/home/HeroSection';
-import { BentoContent } from '@/components/home/BentoContent';
+"use client";
+
+import { useEffect, useRef, useState } from 'react';
 import { Footer } from '@/components/layout/Footer';
+import { HomeIllustrations } from '@/components/home/HomeIllustrations';
+
+// New Architecture Components
+import { ImageHeroSection } from '@/components/home/ImageHeroSection';
+import { QuoteTickerSection } from '@/components/home/QuoteTickerSection';
+import { FeatureBentoSection } from '@/components/home/FeatureBentoSection';
+import { ScatteredTestimonials } from '@/components/home/ScatteredTestimonials';
+import { PopularCategories } from '@/components/home/PopularCategories';
+import { HowItWorksSteps } from '@/components/home/HowItWorksSteps';
+import { JoinCtaSection } from '@/components/home/JoinCtaSection';
+
+export type ActiveHomeSection = 'hero' | 'ticker' | 'bento' | 'testimonials' | 'categories' | 'steps' | 'cta' | 'footer';
 
 export default function Home() {
+  const [activeSection, setActiveSection] = useState<ActiveHomeSection>('hero');
+
+  const heroRef = useRef<HTMLElement>(null);
+  const tickerRef = useRef<HTMLDivElement>(null);
+  const bentoRef = useRef<HTMLDivElement>(null);
+  const testimonialsRef = useRef<HTMLDivElement>(null);
+  const categoriesRef = useRef<HTMLDivElement>(null);
+  const stepsRef = useRef<HTMLDivElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
+  const footerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // We want the section to trigger before it reaches the exact center, so it transitions early enough
+    const observerOptions = {
+      root: null,
+      rootMargin: '-20% 0px -40% 0px',
+      threshold: 0
+    };
+
+    const observerCallback: IntersectionObserverCallback = (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          setActiveSection(id.replace('-section', '') as ActiveHomeSection);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    [heroRef, tickerRef, bentoRef, testimonialsRef, categoriesRef, stepsRef, ctaRef, footerRef].forEach(ref => {
+      if (ref.current) observer.observe(ref.current);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] selection:bg-primary/30 selection:text-primary pb-20 font-sans">
-      <main className="px-4 md:px-8 max-w-[1700px] mx-auto pt-24">
-        <HeroSection />
+    <div className="min-h-screen bg-transparent selection:bg-primary/30 selection:text-primary font-sans relative">
+      <HomeIllustrations activeSection={activeSection} />
+
+      {/* 1. Hero */}
+      <main id="hero-section" ref={heroRef} className="relative z-10 w-full overflow-hidden">
+        <ImageHeroSection />
       </main>
-      <BentoContent />
-      <div className="relative z-10 bg-[var(--bg-footer)]">
+
+      {/* 2. Ticker Quote */}
+      <div id="ticker-section" ref={tickerRef} className="relative z-10 w-full">
+        <QuoteTickerSection />
+      </div>
+
+      {/* 3. Feature Bento */}
+      <div id="bento-section" ref={bentoRef} className="relative z-10 w-full mt-20">
+        <FeatureBentoSection />
+      </div>
+
+      {/* 4. Scatter Testimonials */}
+      <div id="testimonials-section" ref={testimonialsRef} className="relative z-10 w-full">
+        <ScatteredTestimonials />
+      </div>
+
+      {/* 5. Popular Categories */}
+      <div id="categories-section" ref={categoriesRef} className="relative z-10 w-full mt-10">
+        <PopularCategories />
+      </div>
+
+      {/* 6. Steps */}
+      <div id="steps-section" ref={stepsRef} className="relative z-10 w-full mt-24">
+        <HowItWorksSteps />
+      </div>
+
+      {/* 7. Final Join CTA */}
+      <div id="cta-section" ref={ctaRef} className="relative z-10 w-full">
+        <JoinCtaSection />
+      </div>
+
+      {/* 8. Footer */}
+      <div id="footer-section" ref={footerRef} className="relative z-10 bg-transparent">
         <Footer />
       </div>
     </div>
