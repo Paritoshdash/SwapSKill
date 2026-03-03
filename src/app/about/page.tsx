@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -71,7 +73,7 @@ export default function AboutPage() {
                 </div>
             </section>
 
-            {/* ==== VIDEO DEMO PLACEHOLDER ==== */}
+            {/* ==== VIDEO DEMO ==== */}
             <section className="relative px-6 py-32 bg-[var(--bg-base)]">
                 <div className="max-w-5xl mx-auto text-center space-y-12">
                     <div className="space-y-4">
@@ -79,8 +81,12 @@ export default function AboutPage() {
                         <p className="text-text-muted max-w-2xl mx-auto">Watch a 2-minute demonstration of how easily communities are growing through transparent skill exchanges.</p>
                     </div>
 
-                    <div className="relative aspect-video w-full rounded-3xl overflow-hidden border border-[var(--divider)] group cursor-pointer shadow-[0_0_50px_rgba(245,178,26,0.05)] bg-[var(--bg-card)]">
-                        {/* Placeholder gradient mimicking a blurry video thumbnail */}
+                    <div
+                        onClick={() => {
+                            import('react-hot-toast').then(mod => mod.default.success("Video coming soon!"));
+                        }}
+                        className="relative aspect-video w-full rounded-3xl overflow-hidden border border-[var(--divider)] group cursor-pointer shadow-[0_0_50px_rgba(245,178,26,0.05)] bg-[var(--bg-card)]">
+                        {/* Gradient mimicking a blurry video thumbnail */}
                         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-primary/5 to-[var(--bg-base)] blur-xl opacity-60 transition-opacity group-hover:opacity-100" />
 
                         {/* Play Button Overlay */}

@@ -33,9 +33,9 @@ const variants: Variants = {
 
 export function HomeIllustrations({ activeSection }: HomeIllustrationsProps) {
     return (
-        <div className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center p-4 md:p-8">
-            {/* Curved Rectangle Container */}
-            <div className="w-full h-full max-w-[1800px] rounded-[40px] md:rounded-[80px] overflow-hidden relative border border-white/5 shadow-2xl">
+        <div className="fixed inset-0 pointer-events-none z-0">
+            {/* Full Bleed Container */}
+            <div className="w-full h-full relative">
                 <AnimatePresence mode="popLayout">
                     {activeSection === 'hero' && (
                         <motion.div
@@ -93,18 +93,6 @@ export function HomeIllustrations({ activeSection }: HomeIllustrationsProps) {
                         </motion.div>
                     )}
 
-                    {activeSection === 'categories' && (
-                        <motion.div
-                            key="categories"
-                            variants={variants}
-                            initial="initial"
-                            animate="animate"
-                            exit="exit"
-                            className="absolute inset-0 w-full h-full bg-[#0a0a0a]"
-                        >
-                            <div className="absolute top-[10%] inset-x-0 mx-auto w-[60vw] h-[40vw] rounded-full bg-blue-500/5 blur-[120px]" />
-                        </motion.div>
-                    )}
 
                     {activeSection === 'steps' && (
                         <motion.div

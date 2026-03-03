@@ -47,16 +47,28 @@ export async function POST(req: Request) {
 
         const event = JSON.parse(bodyText);
 
+        // SC to INR conversion rate (e.g., 1 SC = 1 INR)
+        const SC_TO_INR_RATE = 1;
+
         // Process successful payment
         if (event.event === 'order.paid' || event.event === 'payment.captured') {
             const payment = event.payload.payment.entity;
             const orderId = payment.order_id;
+            const amountPaidPaisa = payment.amount;
 
             // Extract the metadata we passed during order creation
             const userId = payment.notes?.user_id;
-            const scAmount = parseInt(payment.notes?.sc_amount || "0");
+            const scAmount = parseInt(payment.notes?.sc_amount || "0", 10);
 
             if (userId && scAmount > 0) {
+                // Strict validation to prevent price manipulation
+                const expectedAmountPaisa = scAmount * SC_TO_INR_RATE * 100;
+
+                if (amountPaidPaisa !== expectedAmountPaisa) {
+                    console.error(`Webhook: Price manipulation detected for user ${userId}. Paid: ${amountPaidPaisa}, Expected: ${expectedAmountPaisa}`);
+                    return NextResponse.json({ error: 'Payment manipulation detected.' }, { status: 400 });
+                }
+
                 // Ensure atomic Top-Up using RPC or direct admin update
                 const { data: user, error: userError } = await supabaseAdmin
                     .from('users')
@@ -79,7 +91,6 @@ export async function POST(req: Request) {
                             description: `Purchased ${scAmount} SC via Razorpay Order ${orderId}`
                         }]);
 
-                    console.log(`Successfully topped up ${scAmount} SC for user ${userId}`);
                 } else {
                     console.error('Webhook: User not found for SC Top-Up', userId);
                 }

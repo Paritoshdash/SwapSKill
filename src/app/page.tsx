@@ -9,11 +9,12 @@ import { ImageHeroSection } from '@/components/home/ImageHeroSection';
 import { QuoteTickerSection } from '@/components/home/QuoteTickerSection';
 import { FeatureBentoSection } from '@/components/home/FeatureBentoSection';
 import { ScatteredTestimonials } from '@/components/home/ScatteredTestimonials';
-import { PopularCategories } from '@/components/home/PopularCategories';
+import { ReviewForm } from '@/components/home/ReviewForm';
 import { HowItWorksSteps } from '@/components/home/HowItWorksSteps';
 import { JoinCtaSection } from '@/components/home/JoinCtaSection';
+import { BackgroundAnimation } from '@/components/home/BackgroundAnimation';
 
-export type ActiveHomeSection = 'hero' | 'ticker' | 'bento' | 'testimonials' | 'categories' | 'steps' | 'cta' | 'footer';
+export type ActiveHomeSection = 'hero' | 'ticker' | 'bento' | 'testimonials' | 'steps' | 'cta' | 'footer';
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState<ActiveHomeSection>('hero');
@@ -22,7 +23,6 @@ export default function Home() {
   const tickerRef = useRef<HTMLDivElement>(null);
   const bentoRef = useRef<HTMLDivElement>(null);
   const testimonialsRef = useRef<HTMLDivElement>(null);
-  const categoriesRef = useRef<HTMLDivElement>(null);
   const stepsRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLDivElement>(null);
@@ -46,7 +46,7 @@ export default function Home() {
 
     const observer = new IntersectionObserver(observerCallback, observerOptions);
 
-    [heroRef, tickerRef, bentoRef, testimonialsRef, categoriesRef, stepsRef, ctaRef, footerRef].forEach(ref => {
+    [heroRef, tickerRef, bentoRef, testimonialsRef, stepsRef, ctaRef, footerRef].forEach(ref => {
       if (ref.current) observer.observe(ref.current);
     });
 
@@ -55,6 +55,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-transparent selection:bg-primary/30 selection:text-primary font-sans relative">
+      <BackgroundAnimation />
       <HomeIllustrations activeSection={activeSection} />
 
       {/* 1. Hero */}
@@ -75,11 +76,7 @@ export default function Home() {
       {/* 4. Scatter Testimonials */}
       <div id="testimonials-section" ref={testimonialsRef} className="relative z-10 w-full">
         <ScatteredTestimonials />
-      </div>
-
-      {/* 5. Popular Categories */}
-      <div id="categories-section" ref={categoriesRef} className="relative z-10 w-full mt-10">
-        <PopularCategories />
+        <ReviewForm />
       </div>
 
       {/* 6. Steps */}

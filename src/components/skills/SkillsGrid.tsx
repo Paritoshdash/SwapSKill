@@ -1,7 +1,8 @@
 import React from 'react';
+import { SkillCard } from './SkillCard';
 
 export interface Skill {
-    id: number;
+    id: string;
     title: string;
     provider: string;
     providerId: string;
@@ -41,11 +42,9 @@ export function SkillsGrid({ skills, visibleCount, onLoadMore }: SkillsGridProps
     return (
         <div className="w-full">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                {/* Dynamically imported transparently from previous SkillCard file */}
-                {visibleSkills.map((skill) => {
-                    const { SkillCard } = require('./SkillCard');
-                    return <SkillCard key={skill.id} {...skill} />;
-                })}
+                {visibleSkills.map((skill) => (
+                    <SkillCard key={skill.id} {...skill} />
+                ))}
             </div>
 
             {/* Pagination / Load More */}

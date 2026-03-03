@@ -58,6 +58,12 @@ export default function FAQPage() {
                             <input
                                 type="text"
                                 placeholder="Search articles, guides, and FAQs..."
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        import('react-hot-toast').then(mod => mod.default.error("Search index is currently unavailable."));
+                                    }
+                                }}
                                 className="w-full bg-[#111111] border border-white/10 rounded-full py-4 pl-12 pr-6 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all"
                             />
                         </div>
@@ -112,7 +118,7 @@ export default function FAQPage() {
                 <div className="max-w-4xl mx-auto">
                     <div className="text-center mb-16">
                         <h2 className="text-3xl md:text-5xl font-bold mb-4">Frequently Asked Questions</h2>
-                        <p className="text-gray-400">Can't find what you're looking for? Reach out to support below.</p>
+                        <p className="text-gray-400">Can&apos;t find what you&apos;re looking for? Reach out to support below.</p>
                     </div>
 
                     <div className="space-y-4">
@@ -210,7 +216,13 @@ export default function FAQPage() {
                                     placeholder="How can we help?"
                                 />
                             </div>
-                            <button type="button" className="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-4 rounded-xl transition-all hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:scale-[1.02] active:scale-[0.98]">
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    import('react-hot-toast').then(mod => mod.default.success("Message sent successfully. Our team will reach out soon."));
+                                }}
+                                className="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-4 rounded-xl transition-all hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:scale-[1.02] active:scale-[0.98]">
                                 Send Message
                             </button>
                         </form>

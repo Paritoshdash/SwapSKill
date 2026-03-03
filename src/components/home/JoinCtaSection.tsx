@@ -1,9 +1,10 @@
 import React from 'react';
 import Link from 'next/link';
+import { Avatar } from '@/components/ui/Avatar';
 
 export function JoinCtaSection() {
     return (
-        <section className="w-full bg-black py-32 relative z-20 overflow-hidden border-t-2 border-divider">
+        <section className="w-full py-32 relative z-20 overflow-hidden">
             <div className="max-w-[1200px] mx-auto px-6 relative z-10 flex flex-col items-center text-center">
 
                 <h2 className="text-5xl md:text-7xl lg:text-8xl font-heading font-black text-white leading-[0.9] tracking-tighter mb-8 max-w-4xl drop-shadow-2xl">
@@ -30,7 +31,7 @@ export function JoinCtaSection() {
                     {/* Repeating visual placeholder for crowd/faces */}
                     {[...Array(20)].map((_, i) => (
                         <div key={i} className="w-32 h-32 md:w-48 md:h-48 rounded-full border-4 border-black -ml-8 overflow-hidden shrink-0">
-                            <img src={`https://i.pravatar.cc/150?img=${(i % 50) + 1}`} alt="Avatar pattern" className="w-full h-full object-cover" />
+                            <Avatar name={`User ${i}`} className="w-full h-full text-2xl md:text-3xl" />
                         </div>
                     ))}
                 </div>

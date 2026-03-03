@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 export function LoginForm() {
     const [isLoading, setIsLoading] = useState(false);
@@ -30,7 +31,7 @@ export function LoginForm() {
         setIsLoading(false);
 
         if (error) {
-            alert(error.message); // In a real app we'd use a toast component
+            toast.error(error.message);
         } else {
             router.push('/');
         }

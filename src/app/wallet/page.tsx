@@ -44,7 +44,7 @@ export default function WalletPage() {
     const handleBuyPack = async (packIndex: number) => {
         if (!user) return;
         if (!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) {
-            alert("Razorpay is not configured yet. This is a mockup of the flow.");
+            toast.error("Payments are currently disabled. Please try again later.");
             return;
         }
 

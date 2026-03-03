@@ -1,52 +1,118 @@
 "use client";
 
-import React, { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { createClient } from '@/utils/supabase/client';
+import { Marquee } from "@/components/magicui/marquee";
 
-const testimonials = [
-    {
-        quote: "Swapping Python lessons for Digital Marketing completely transformed my startup's trajectory without costing a single rupee.",
-        author: "Priya Sharma",
-        role: "Technical Founder",
-        avatar: "https://i.pravatar.cc/150?img=5",
-        offset: "md:mt-0 md:ml-0" // Top right
-    },
-    {
-        quote: "The quality of peers on SwapSkill is unmatched. I've built a network of ambitious professionals while learning UI/UX design.",
-        author: "Rahul Verma",
-        role: "Frontend Developer",
-        avatar: "https://i.pravatar.cc/150?img=11",
-        offset: "md:mt-32 md:-ml-12" // Middle left
-    },
-    {
-        quote: "I never thought I could trade my Spanish skills for AWS architecture help. This platform is a game-changer.",
-        author: "Elena Rodriguez",
-        role: "Language Architect",
-        avatar: "https://i.pravatar.cc/150?img=3",
-        offset: "md:mt-64 md:ml-24" // Bottom right
-    }
-];
+interface Review {
+    id: string;
+    content: string;
+    rating: number;
+    user: {
+        name: string;
+        profile_pic: string;
+    };
+}
+
+const ReviewCard = ({
+    img,
+    name,
+    body,
+}: {
+    img: string;
+    name: string;
+    body: string;
+}) => {
+    return (
+        <figure
+            className="relative h-full w-full cursor-pointer overflow-hidden rounded-2xl border p-6 m-2 border-white/5 bg-white/[0.03] hover:bg-white/[0.08] transition-colors duration-300 backdrop-blur-sm shadow-xl"
+        >
+            <div className="flex flex-row items-center gap-3">
+                <img className="rounded-full border border-white/10 object-cover" width="44" height="44" alt={name} src={img || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`} />
+                <div className="flex flex-col">
+                    <figcaption className="text-sm font-bold text-white">
+                        {name}
+                    </figcaption>
+                    <p className="text-xs font-medium text-text-muted">Reviewer</p>
+                </div>
+            </div>
+            <blockquote className="mt-4 text-sm leading-relaxed text-[#c0c0c0] font-serif italic">
+                &quot;{body}&quot;
+            </blockquote>
+        </figure>
+    );
+};
 
 export function ScatteredTestimonials() {
-    const containerRef = useRef<HTMLElement>(null);
-    const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ["start end", "end start"]
-    });
+    const [reviews, setReviews] = useState<Review[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const supabase = createClient();
 
-    // Different parallax speeds for cards based on index
-    const y1 = useTransform(scrollYProgress, [0, 1], [100, -100]);
-    const y2 = useTransform(scrollYProgress, [0, 1], [200, -50]);
-    const y3 = useTransform(scrollYProgress, [0, 1], [50, -200]);
+    const fetchReviews = React.useCallback(async () => {
+        setIsLoading(true);
+        const { data, error } = await supabase
+            .from('website_reviews')
+            .select(`
+                id,
+                content,
+                rating,
+                user:users (
+                    name,
+                    profile_pic
+                )
+            `)
+            .order('created_at', { ascending: false })
+            .limit(10);
 
-    const transforms = [y1, y2, y3];
+        if (data) {
+            setReviews(data as any);
+        } else if (error) {
+            console.error('Error fetching reviews:', error);
+        }
+        setIsLoading(false);
+    }, [supabase]);
+
+    useEffect(() => {
+        fetchReviews();
+
+        // Real-time subscription for new reviews
+        const channel = supabase
+            .channel('public:website_reviews')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'website_reviews' }, () => {
+                fetchReviews(); // Re-fetch to get the user join data
+            })
+            .subscribe();
+
+        // Listen for local custom event from ReviewForm
+        const handleReviewSubmitted = () => {
+            fetchReviews();
+        };
+
+        window.addEventListener('review-submitted', handleReviewSubmitted);
+
+        return () => {
+            supabase.removeChannel(channel);
+            window.removeEventListener('review-submitted', handleReviewSubmitted);
+        };
+    }, [supabase, fetchReviews]);
+
+    const firstRow = reviews.slice(0, Math.ceil(reviews.length / 2));
+    const secondRow = reviews.slice(Math.ceil(reviews.length / 2));
+
+    if (isLoading && reviews.length === 0) {
+        return (
+            <div className="w-full py-32 flex items-center justify-center">
+                <div className="animate-pulse text-primary font-heading text-xl uppercase tracking-widest">Loading Testimonials...</div>
+            </div>
+        );
+    }
 
     return (
-        <section ref={containerRef} className="w-full py-24 px-4 md:px-12 relative z-20">
-            <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        <section className="w-full py-32 px-4 md:px-12 relative z-20 overflow-hidden">
+            <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
 
                 {/* Left Column: Big Bold Text */}
-                <div className="lg:col-span-5 sticky top-32">
+                <div className="lg:col-span-5 relative z-30">
                     <h2 className="text-6xl md:text-[8vw] lg:text-[7vw] font-heading font-black text-white leading-[0.8] tracking-tighter uppercase mb-4">
                         OUR <br />
                         <span className="text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">CUSTOMER</span><br />
@@ -59,35 +125,34 @@ export function ScatteredTestimonials() {
                     </h2>
                 </div>
 
-                {/* Right Column: Scattered Cards Layout imitating image's cascading arrangement */}
-                <div className="lg:col-span-7 relative h-auto min-h-[800px] flex flex-col md:block mt-12 lg:mt-0 gap-6">
-
-                    {testimonials.map((t, i) => (
-                        <motion.div
-                            key={i}
-                            style={{ y: transforms[i] }}
-                            className={`relative md:absolute w-full md:w-[450px] bg-[var(--bg-card)] p-8 rounded-[24px] border border-white/5 shadow-2xl hover:border-primary/30 transition-colors duration-300 group hover:-translate-y-2 z-${30 - i * 10} ${t.offset}`}
-                        >
-                            <div className="flex items-start gap-4 mb-6">
-                                <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-primary/20 shrink-0">
-                                    <img src={t.avatar} alt={t.author} className="w-full h-full object-cover" />
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-white text-lg">{t.author}</h4>
-                                    <p className="text-sm text-text-muted">{t.role}</p>
-                                </div>
-                            </div>
-                            <p className="text-[17px] leading-relaxed text-[#c0c0c0] font-serif group-hover:text-white transition-colors">
-                                &quot;{t.quote}&quot;
-                            </p>
-
-                            {/* Decorative quote mark */}
-                            <div className="absolute top-6 right-6 text-6xl text-white/5 font-serif leading-none select-none pointer-events-none group-hover:text-primary/10 transition-colors">
-                                &quot;
-                            </div>
-                        </motion.div>
-                    ))}
-
+                {/* Right Column: Marquee Demo Vertical */}
+                <div className="lg:col-span-7 relative flex h-[600px] w-full flex-row items-center justify-center overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,black_10%,black_90%,transparent)]">
+                    {reviews.length > 0 ? (
+                        <>
+                            <Marquee pauseOnHover vertical className="[--duration:25s] w-1/2">
+                                {firstRow.map((review) => (
+                                    <ReviewCard
+                                        key={review.id}
+                                        name={review.user?.name || 'Anonymous'}
+                                        img={review.user?.profile_pic}
+                                        body={review.content}
+                                    />
+                                ))}
+                            </Marquee>
+                            <Marquee reverse pauseOnHover vertical className="[--duration:25s] w-1/2">
+                                {secondRow.map((review) => (
+                                    <ReviewCard
+                                        key={review.id}
+                                        name={review.user?.name || 'Anonymous'}
+                                        img={review.user?.profile_pic}
+                                        body={review.content}
+                                    />
+                                ))}
+                            </Marquee>
+                        </>
+                    ) : (
+                        <div className="text-white/20 font-serif italic text-lg">No reviews yet. Be the first to share your experience!</div>
+                    )}
                 </div>
 
             </div>

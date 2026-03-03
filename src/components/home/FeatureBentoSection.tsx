@@ -3,6 +3,7 @@
 import React, { useRef } from 'react';
 import Link from 'next/link';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { Avatar } from '@/components/ui/Avatar';
 
 export function FeatureBentoSection() {
     const containerRef = useRef<HTMLElement>(null);
@@ -18,7 +19,7 @@ export function FeatureBentoSection() {
     return (
         <section ref={containerRef} className="w-full py-20 px-4 md:px-8 relative z-20">
             {/* Main Rounded Dark Container capturing the image's "Connect with your community" area */}
-            <div className="max-w-[1400px] mx-auto bg-black border border-white/5 rounded-[40px] md:rounded-[60px] p-8 md:p-16 shadow-[0_30px_60px_rgba(0,0,0,0.6)]">
+            <div className="max-w-[1400px] mx-auto p-8 md:p-16">
 
                 <div className="max-w-3xl mb-16">
                     <h2 className="text-4xl md:text-6xl font-heading font-black text-white leading-[0.9] tracking-tighter">
@@ -46,8 +47,8 @@ export function FeatureBentoSection() {
                         >
                             <div className="flex items-center justify-between mb-4">
                                 <div className="flex -space-x-3">
-                                    <div className="w-10 h-10 rounded-full border-2 border-bg-base overflow-hidden"><img src="https://i.pravatar.cc/150?img=11" alt="u1" /></div>
-                                    <div className="w-10 h-10 rounded-full border-2 border-bg-base overflow-hidden"><img src="https://i.pravatar.cc/150?img=12" alt="u2" /></div>
+                                    <Avatar name="User A" className="w-10 h-10 border-2 border-bg-base text-sm" />
+                                    <Avatar name="User B" className="w-10 h-10 border-2 border-bg-base text-sm" />
                                 </div>
                                 <span className="text-xs font-bold text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">98% Match</span>
                             </div>
@@ -124,12 +125,12 @@ export function FeatureBentoSection() {
                                 </svg>
 
                                 {/* Node points */}
-                                <div className="absolute top-[80px] left-[30px] w-10 h-10 rounded-full bg-bg-base border-2 border-primary flex items-center justify-center shadow-[0_0_15px_rgba(245,178,26,0.5)] z-10 overflow-hidden"><img src="https://i.pravatar.cc/150?img=20" alt="node" className="w-full h-full object-cover" /></div>
+                                <div className="absolute top-[80px] left-[30px] w-10 h-10 rounded-full bg-bg-base border-2 border-primary flex items-center justify-center shadow-[0_0_15px_rgba(245,178,26,0.5)] z-10 overflow-hidden"><Avatar name="Node 1" className="w-full h-full text-xs" /></div>
                                 <div className="absolute top-[10px] left-[180px] bg-bg-base border border-divider px-3 py-1 rounded-lg shadow-lg z-10 text-xs font-bold text-white">JavaScript</div>
                                 <div className="absolute top-[160px] left-[140px] w-8 h-8 rounded-full bg-blue-500/20 border border-blue-500 flex items-center justify-center shadow-[0_0_10px_rgba(59,130,246,0.5)] z-10">
                                     <span className="text-[10px]">React</span>
                                 </div>
-                                <div className="absolute top-[80px] right-[40px] w-12 h-12 rounded-full bg-bg-base border-2 border-secondary flex items-center justify-center shadow-[0_0_15px_rgba(229,142,0,0.5)] z-10 overflow-hidden"><img src="https://i.pravatar.cc/150?img=25" alt="node" className="w-full h-full object-cover" /></div>
+                                <div className="absolute top-[80px] right-[40px] w-12 h-12 rounded-full bg-bg-base border-2 border-secondary flex items-center justify-center shadow-[0_0_15px_rgba(229,142,0,0.5)] z-10 overflow-hidden"><Avatar name="Node 2" className="w-full h-full text-xs" /></div>
                             </motion.div>
                         </div>
                     </div>

@@ -37,7 +37,7 @@ export function SmoothScrollWrapper({ children }: { children: React.ReactNode[] 
 }
 
 // Helper component to resolve Rules of Hooks for React.Children.map
-const SectionItem = ({
+function SectionItem({
     child,
     index,
     numSections,
@@ -47,7 +47,7 @@ const SectionItem = ({
     index: number;
     numSections: number;
     scrollYProgress: any;
-}) => {
+}) {
     // Each section gets 1/numSections of the scroll progress
     const start = index / numSections;
     const end = start + (1 / numSections);

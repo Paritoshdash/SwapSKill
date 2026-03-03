@@ -19,8 +19,34 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "SwapSkill - Skill Exchange Platform",
-  description: "Swap knowledge. Learn faster. Grow together.",
+  title: {
+    template: "%s | SwapSkill",
+    default: "SwapSkill - The Global Skill Exchange Platform",
+  },
+  description: "Swap knowledge. Learn faster. Grow together. Trade your skills with experts worldwide without spending money.",
+  keywords: ["skill exchange", "mentorship", "barter skills", "learn online", "SwapSkill", "peer-to-peer learning"],
+  openGraph: {
+    title: "SwapSkill - Skill Exchange Platform",
+    description: "Swap knowledge. Learn faster. Grow together. Trade your skills with experts worldwide.",
+    url: "https://swapskill.com",
+    siteName: "SwapSkill",
+    images: [
+      {
+        url: "https://swapskill.com/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "SwapSkill Preview",
+      }
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SwapSkill - The Global Skill Exchange Platform",
+    description: "Trade your skills with experts worldwide without spending money.",
+    images: ["https://swapskill.com/og-image.png"],
+  },
 };
 
 export default function RootLayout({

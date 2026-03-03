@@ -55,9 +55,6 @@ export function Navbar() {
                                 <Link href="/profile" className="text-text-muted hover:text-primary hover:bg-primary/10 px-4 py-2 rounded-[12px] font-medium text-sm transition-all duration-200">
                                     Profile
                                 </Link>
-                                <Link href="/wallet" className="text-text-muted hover:text-primary hover:bg-primary/10 px-4 py-2 rounded-[12px] font-medium text-sm transition-all duration-200">
-                                    Wallet
-                                </Link>
                                 <Link href="/messages" className="text-text-muted hover:text-primary hover:bg-primary/10 px-4 py-2 rounded-[12px] font-medium text-sm transition-all duration-200 relative">
                                     Messages
                                     <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full drop-shadow-[0_0_4px_rgba(245,178,26,0.8)]"></span>

@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import { Avatar } from '@/components/ui/Avatar';
 
 const steps = [
     {
@@ -34,8 +35,8 @@ const steps = [
                     <svg width="100%" height="100%" viewBox="0 0 100 100" className="absolute inset-0">
                         <circle cx="50" cy="50" r="40" fill="none" stroke="var(--color-primary)" strokeWidth="1" strokeDasharray="4 4" className="animate-[spin_20s_linear_infinite]" opacity="0.3" />
                     </svg>
-                    <div className="absolute top-4 left-4 w-10 h-10 rounded-full bg-bg-base border-2 border-primary z-10 overflow-hidden"><img src="https://i.pravatar.cc/150?img=33" alt="User 1" /></div>
-                    <div className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-bg-base border-2 border-secondary z-10 overflow-hidden"><img src="https://i.pravatar.cc/150?img=44" alt="User 2" /></div>
+                    <div className="absolute top-4 left-4 w-10 h-10 rounded-full bg-bg-base border-2 border-primary z-10 overflow-hidden"><Avatar name="U 1" className="w-full h-full text-xs" /></div>
+                    <div className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-bg-base border-2 border-secondary z-10 overflow-hidden"><Avatar name="U 2" className="w-full h-full text-xs" /></div>
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-black font-bold text-[10px] px-2 py-1 rounded-full z-20 shadow-[0_0_10px_rgba(245,178,26,0.5)]">
                         MATCH
                     </div>
@@ -68,7 +69,7 @@ const steps = [
 
 export function HowItWorksSteps() {
     return (
-        <section className="w-full py-24 relative z-20 bg-black/20 border-y border-divider/20">
+        <section className="w-full py-24 relative z-20">
             <div className="max-w-[1400px] mx-auto px-6 md:px-12 text-center md:text-left">
 
                 <h2 className="text-5xl md:text-6xl lg:text-[7vw] font-heading font-black text-text-main leading-[0.85] tracking-tighter mb-16">

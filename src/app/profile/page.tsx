@@ -175,29 +175,16 @@ export default function ProfilePage() {
                     {activeTab === 'reviews' && (
                         <div className="animate-fade-in-up bg-[var(--bg-card)] border border-[var(--divider)] rounded-[2rem] p-8">
                             <div className="flex items-center gap-4 mb-8">
-                                <div className="text-5xl font-heading font-extrabold text-text-main">4.9</div>
+                                <div className="text-5xl font-heading font-extrabold text-text-main">0.0</div>
                                 <div className="flex flex-col gap-1">
-                                    <div className="flex text-primary text-lg">★★★★★</div>
-                                    <div className="text-sm text-text-muted">Based on 12 reviews</div>
+                                    <div className="flex text-text-muted text-lg">☆☆☆☆☆</div>
+                                    <div className="text-sm text-text-muted">Based on 0 reviews</div>
                                 </div>
                             </div>
 
                             <div className="space-y-6">
-                                {/* Dummy Review */}
-                                <div className="border border-[var(--divider)] bg-[var(--bg-section)] p-6 rounded-2xl hover:border-primary/30 transition-colors">
-                                    <div className="flex justify-between items-start mb-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-[#121212] font-bold">A</div>
-                                            <div>
-                                                <div className="text-text-main font-semibold">Alex Johnson</div>
-                                                <div className="text-xs text-text-muted">2 weeks ago</div>
-                                            </div>
-                                        </div>
-                                        <div className="text-primary text-sm">★★★★★</div>
-                                    </div>
-                                    <p className="text-text-main text-sm leading-relaxed">
-                                        &quot;{user.name} is an incredible mentor! The session was structural, clear, and perfectly tailored to my questions. Highly recommend swapping with them.&quot;
-                                    </p>
+                                <div className="text-center py-10 bg-[var(--bg-section)] border border-[var(--divider)] rounded-2xl">
+                                    <p className="text-text-muted">No reviews yet. Complete a swap to earn your first review!</p>
                                 </div>
                             </div>
                         </div>

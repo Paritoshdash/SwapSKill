@@ -115,7 +115,7 @@ export function BackgroundAnimation() {
     }, { scope: containerRef });
 
     return (
-        <div ref={containerRef} className="absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none opacity-100 rounded-[40px] md:rounded-[60px]">
+        <div ref={containerRef} className="fixed inset-0 w-full h-full -z-10 pointer-events-none opacity-100">
             <canvas
                 ref={canvasRef}
                 className="w-full h-full object-cover opacity-100 contrast-110 saturate-110 filter"

@@ -1,6 +1,30 @@
 import { Skill } from '@/components/skills/SkillsGrid';
 import { createClient } from '@/utils/supabase/client';
 
+interface DatabaseSkill {
+    id: string;
+    title: string;
+    category: string;
+    type: 'Online' | 'Offline';
+    duration_hours: number;
+    sc_cost: number;
+    rating: number;
+    created_at: string;
+    provider_id: string;
+    users: {
+        name: string;
+    };
+}
+
+interface SkillInput {
+    providerId: string;
+    title: string;
+    category: string;
+    type: 'Online' | 'Offline';
+    duration_hours?: number;
+    sc_cost?: number;
+}
+
 export const storage = {
     initializeData: async () => {
         // Handled by database seeding now.
@@ -28,21 +52,21 @@ export const storage = {
             return [];
         }
 
-        return data.map((item: any) => ({
+        return (data as unknown as DatabaseSkill[] || []).map((item) => ({
             id: item.id,
             title: item.title,
-            provider: item.users.name,
+            provider: item.users?.name || 'Unknown Provider',
             providerId: item.provider_id,
-            rating: item.rating,
-            price: `${item.sc_cost} SC`,
+            rating: item.rating || 0,
+            price: `${item.sc_cost || 0} SC`,
             category: item.category,
             type: item.type,
-            duration: `${item.duration_hours} Hour${item.duration_hours > 1 ? 's' : ''}`,
+            duration: `${item.duration_hours || 0} Hour${(item.duration_hours || 0) !== 1 ? 's' : ''}`,
             createdAt: item.created_at
         }));
     },
 
-    addSkill: async (skill: any): Promise<any> => {
+    addSkill: async (skill: SkillInput): Promise<DatabaseSkill | null> => {
         const supabase = createClient();
         const { data, error } = await supabase
             .from('skills')
@@ -87,16 +111,16 @@ export const storage = {
             return [];
         }
 
-        return data.map((item: any) => ({
+        return (data as unknown as DatabaseSkill[] || []).map((item) => ({
             id: item.id,
             title: item.title,
-            provider: item.users.name,
+            provider: item.users?.name || 'Unknown Provider',
             providerId: item.provider_id,
-            rating: item.rating,
-            price: `${item.sc_cost} SC`,
+            rating: item.rating || 0,
+            price: `${item.sc_cost || 0} SC`,
             category: item.category,
             type: item.type,
-            duration: `${item.duration_hours} Hour${item.duration_hours > 1 ? 's' : ''}`,
+            duration: `${item.duration_hours || 0} Hour${(item.duration_hours || 0) !== 1 ? 's' : ''}`,
             createdAt: item.created_at
         }));
     }
