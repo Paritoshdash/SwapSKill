@@ -7,7 +7,6 @@ interface SkillCardProps {
     title: string;
     provider: string;
     rating: number;
-    price: string;
     category: string;
     type: 'Online' | 'Offline';
     duration: string;
@@ -19,10 +18,10 @@ export function SkillCard({ id, title, provider, rating, category, type, duratio
     return (
         <div
             onClick={() => router.push(`/book/${id}`)}
-            className="group relative w-full h-80 bg-[var(--bg-card)] rounded-[2rem] border border-[var(--divider)] overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_0_25px_rgba(245,178,26,0.15)] cursor-pointer"
+            className="group relative w-full h-80 bg-card rounded-[32px] border border-divider overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_0_25px_rgba(245,178,26,0.15)] cursor-pointer"
         >
             {/* 3D Hover Effect Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0"></div>
 
             <div className="relative z-10 flex flex-col h-full p-6">
                 {/* Top Section: Category & Type */}

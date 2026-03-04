@@ -3,7 +3,6 @@ CREATE TYPE user_level AS ENUM ('Beginner', 'Intermediate', 'Advanced', 'Expert'
 CREATE TYPE skill_category AS ENUM ('Coding', 'Art', 'Music', 'Cooking', 'Language', 'Fitness', 'Others');
 CREATE TYPE skill_type AS ENUM ('Online', 'Offline');
 CREATE TYPE session_status AS ENUM ('pending', 'accepted', 'active', 'completed', 'disputed', 'cancelled');
-CREATE TYPE tx_type AS ENUM ('purchase', 'earned', 'spent', 'escrow_hold', 'escrow_release', 'bonus');
 
 -- Users Table
 CREATE TABLE users (
@@ -15,8 +14,7 @@ CREATE TABLE users (
   tagline TEXT,
   bio TEXT,
   level user_level DEFAULT 'Beginner',
-  sc_balance INTEGER DEFAULT 0,
-  is_premium BOOLEAN DEFAULT FALSE,
+  completed_swaps INTEGER DEFAULT 0,
   referral_code TEXT UNIQUE,
   streak_count INTEGER DEFAULT 0,
   deleted_at TIMESTAMP WITH TIME ZONE,
@@ -55,7 +53,6 @@ CREATE TABLE skills (
   category skill_category NOT NULL,
   type skill_type NOT NULL,
   duration_hours NUMERIC NOT NULL,
-  sc_cost INTEGER NOT NULL,
   rating NUMERIC DEFAULT 0,
   review_count INTEGER DEFAULT 0,
   is_active BOOLEAN DEFAULT TRUE,
@@ -72,24 +69,11 @@ CREATE TABLE sessions (
   provider_id UUID REFERENCES users(id) NOT NULL,
   skill_id UUID REFERENCES skills(id) NOT NULL,
   status session_status DEFAULT 'pending',
-  sc_held_in_escrow INTEGER NOT NULL,
   scheduled_at TIMESTAMP WITH TIME ZONE,
   location_details TEXT,
   deleted_at TIMESTAMP WITH TIME ZONE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
-);
-
--- Transactions Table
-CREATE TABLE transactions (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  user_id UUID REFERENCES users(id) NOT NULL,
-  amount INTEGER NOT NULL,
-  tx_type tx_type NOT NULL,
-  description TEXT,
-  reference_id UUID, -- Can refer to a session or payment intent
-  deleted_at TIMESTAMP WITH TIME ZONE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
 -- Reviews Table
@@ -121,7 +105,6 @@ CREATE TRIGGER update_sessions_updated_at BEFORE UPDATE ON sessions FOR EACH ROW
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE skills ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sessions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
 
 -- Users RLS
@@ -139,9 +122,6 @@ CREATE POLICY "Users can delete own skills." ON skills FOR DELETE USING (auth.ui
 CREATE POLICY "Users can view their own sessions." ON sessions FOR SELECT USING ((auth.uid() = seeker_id OR auth.uid() = provider_id) AND deleted_at IS NULL);
 CREATE POLICY "Seekers can create sessions." ON sessions FOR INSERT WITH CHECK (auth.uid() = seeker_id);
 CREATE POLICY "Users can update status of own sessions." ON sessions FOR UPDATE USING ((auth.uid() = seeker_id OR auth.uid() = provider_id) AND deleted_at IS NULL);
-
--- Transactions RLS (Read-only for users, backend creates them)
-CREATE POLICY "Users can view their own transactions." ON transactions FOR SELECT USING (auth.uid() = user_id AND deleted_at IS NULL);
 
 -- Reviews RLS
 CREATE POLICY "Reviews are viewable by everyone." ON reviews FOR SELECT USING (deleted_at IS NULL);
@@ -184,8 +164,6 @@ CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_skills_provider_id ON skills(provider_id);
 CREATE INDEX IF NOT EXISTS idx_sessions_seeker_id ON sessions(seeker_id);
 CREATE INDEX IF NOT EXISTS idx_sessions_provider_id ON sessions(provider_id);
-CREATE INDEX IF NOT EXISTS idx_transactions_user_id ON transactions(user_id);
-CREATE INDEX IF NOT EXISTS idx_transactions_created_at ON transactions(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_reviews_session_id ON reviews(session_id);
 CREATE INDEX IF NOT EXISTS idx_reviews_reviewer_id ON reviews(reviewer_id);
 
@@ -193,45 +171,29 @@ CREATE INDEX IF NOT EXISTS idx_reviews_reviewer_id ON reviews(reviewer_id);
 CREATE INDEX IF NOT EXISTS idx_skills_search ON skills USING GIN(search_vector);
 CREATE UNIQUE INDEX idx_unique_active_skill ON skills (provider_id, title) WHERE deleted_at IS NULL;
 
--- Atomic RPC: Book Session
+-- Atomic RPC: Book Session (Trust Mode)
 CREATE OR REPLACE FUNCTION public.book_session(
   p_seeker_id UUID,
   p_provider_id UUID,
-  p_skill_id UUID,
-  p_sc_cost INTEGER
+  p_skill_id UUID
 ) RETURNS UUID
 LANGUAGE plpgsql
 SECURITY DEFINER SET search_path = public
 AS $$
 DECLARE
-  v_balance INTEGER;
   v_session_id UUID;
 BEGIN
-  -- 1. Check Seeker Balance
-  SELECT sc_balance INTO v_balance FROM users WHERE id = p_seeker_id FOR UPDATE;
-  
-  IF v_balance < p_sc_cost THEN
-    RAISE EXCEPTION 'Insufficient Skill Credits.';
-  END IF;
-
-  -- 2. Deduct Balance
-  UPDATE users SET sc_balance = sc_balance - p_sc_cost WHERE id = p_seeker_id;
-
-  -- 3. Create Session (active / escrow)
-  INSERT INTO sessions (seeker_id, provider_id, skill_id, status, sc_held_in_escrow)
-  VALUES (p_seeker_id, p_provider_id, p_skill_id, 'active', p_sc_cost)
+  -- Create Session (no balance checks required)
+  INSERT INTO sessions (seeker_id, provider_id, skill_id, status)
+  VALUES (p_seeker_id, p_provider_id, p_skill_id, 'active')
   RETURNING id INTO v_session_id;
-
-  -- 4. Record Transaction
-  INSERT INTO transactions (user_id, amount, tx_type, description, reference_id)
-  VALUES (p_seeker_id, p_sc_cost, 'escrow_hold', 'SC held in escrow for session booking', v_session_id);
 
   RETURN v_session_id;
 END;
 $$;
 
--- Atomic RPC: Release Escrow
-CREATE OR REPLACE FUNCTION public.release_escrow(
+-- Atomic RPC: Complete Session (Trust Mode)
+CREATE OR REPLACE FUNCTION public.complete_session(
   p_session_id UUID
 ) RETURNS BOOLEAN
 LANGUAGE plpgsql
@@ -254,12 +216,8 @@ BEGIN
   -- 2. Update Session Status
   UPDATE sessions SET status = 'completed' WHERE id = p_session_id;
 
-  -- 3. Credit Provider
-  UPDATE users SET sc_balance = sc_balance + v_session.sc_held_in_escrow WHERE id = v_session.provider_id;
-
-  -- 4. Record Transaction
-  INSERT INTO transactions (user_id, amount, tx_type, description, reference_id)
-  VALUES (v_session.provider_id, v_session.sc_held_in_escrow, 'escrow_release', 'Escrow released for completed session', p_session_id);
+  -- 3. Increment completed_swaps for both parties
+  UPDATE users SET completed_swaps = COALESCE(completed_swaps, 0) + 1 WHERE id IN (v_session.seeker_id, v_session.provider_id);
 
   RETURN TRUE;
 END;
@@ -305,4 +263,3 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE TRIGGER audit_users_trigger AFTER INSERT OR UPDATE OR DELETE ON users FOR EACH ROW EXECUTE PROCEDURE public.audit_trigger_func();
 CREATE TRIGGER audit_skills_trigger AFTER UPDATE OR DELETE ON skills FOR EACH ROW EXECUTE PROCEDURE public.audit_trigger_func();
 CREATE TRIGGER audit_sessions_trigger AFTER UPDATE OR DELETE ON sessions FOR EACH ROW EXECUTE PROCEDURE public.audit_trigger_func();
-CREATE TRIGGER audit_transactions_trigger AFTER INSERT OR UPDATE OR DELETE ON transactions FOR EACH ROW EXECUTE PROCEDURE public.audit_trigger_func();

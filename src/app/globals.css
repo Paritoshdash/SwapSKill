@@ -2,24 +2,42 @@
 
 :root {
   /* Lightning Yellow Brand Colors */
-  --primary: #F5B21A;
-  --secondary: #E58E00;
+  --primary: #F59E0B;
+  --secondary: #D97706;
   --success: #f7ca5e;
-  /* Lighter yellow tint */
 
-  /* Dark Background Base */
-  --bg-base: #121212;
-  --bg-section: #1C1C1C;
-  --bg-card: #1C1C1C;
-  --bg-footer: #0E0E0E;
+  /* Light Theme (White Mode) */
+  --bg-base: #FFFFFF;
+  --bg-section: #F8F9FA;
+  --bg-surface: #F9FAFB;
+  --bg-card: #FFFFFF;
+  --bg-input: #F3F4F6;
+  --bg-footer: #F9FAFB;
 
-  /* Neutral Text and Borders */
-  --text-main: #EDEDED;
-  --text-muted: #AFAFAF;
-  --divider: #2A2A2A;
+  --text-main: #111827;
+  --text-secondary: #374151;
+  --text-muted: #6B7280;
+  --divider: #E5E7EB;
+  --border-subtle: #E5E7EB;
 
   --font-inter: var(--font-inter);
   --font-poppins: var(--font-poppins);
+}
+
+.dark {
+  /* Dark Background Base */
+  --bg-base: #050505;
+  --bg-section: #0F0F0F;
+  --bg-surface: #121212;
+  --bg-card: #181818;
+  --bg-input: #1A1A1A;
+  --bg-footer: #080808;
+
+  /* Neutral Text and Borders */
+  --text-main: #F9FAFB;
+  --text-muted: #9CA3AF;
+  --divider: #262626;
+  --border-subtle: rgba(255, 255, 255, 0.05);
 }
 
 @theme inline {
@@ -28,12 +46,25 @@
   --color-success: var(--success);
   --color-background: var(--bg-base);
   --color-foreground: var(--text-main);
+  --color-secondary-text: var(--text-secondary);
   --color-muted: var(--text-muted);
   --color-divider: var(--divider);
   --color-section: var(--bg-section);
+  --color-surface: var(--bg-surface);
+  --color-card: var(--bg-card);
+  --color-input-bg: var(--bg-input);
+  --color-border-subtle: var(--border-subtle);
 
   --font-sans: var(--font-inter);
   --font-heading: var(--font-poppins);
+
+  --animate-scroll: scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite;
+
+  @keyframes scroll {
+    to {
+      transform: translate(calc(-50% - 0.5rem));
+    }
+  }
 }
 
 body {

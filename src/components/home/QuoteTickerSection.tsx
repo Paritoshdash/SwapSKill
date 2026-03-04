@@ -1,50 +1,121 @@
 "use client";
 
-import React from 'react';
-import { Avatar } from '@/components/ui/Avatar';
+import React, { useEffect, useState } from 'react';
+import { InfiniteMovingCards } from '@/components/ui/infinite-moving-cards';
+import { createClient } from '@/utils/supabase/client';
 
-const LOGOS = [
-    'Google', 'Microsoft', 'Amazon', 'Meta', 'Apple', 'Netflix', 'Spotify', 'Twitter', 'Stripe', 'Airbnb'
+const mockTestimonials = [
+    {
+        quote: "SwapSkill opened up a whole new world for me. I learned React from a senior dev in exchange for teaching conversational Spanish. It's the most authentic way to learn.",
+        name: "Sarah Jenkins",
+        title: "Senior Frontend Engineer",
+    },
+    {
+        quote: "I've been trying to learn guitar for years but couldn't afford consistent lessons. By swapping my graphic design skills, I found an amazing teacher and made a great friend.",
+        name: "David Chen",
+        title: "UX/UI Designer",
+    },
+    {
+        quote: "The platform's interface is incredibly smooth. I set up my profile in minutes and found a language partner the very next day. Highly recommend to anyone looking to level up.",
+        name: "Elena Rodriguez",
+        title: "Product Manager",
+    },
+    {
+        quote: "As a self-taught programmer, finding mentorship is tough. SwapSkill connected me with incredible minds who were eager to learn my marketing expertise in return.",
+        name: "Marcus Johnson",
+        title: "Growth Hacker",
+    },
+    {
+        quote: "The best part about SwapSkill isn't just the skills you learn, it's the community. Everyone is here to share knowledge and help each other grow. It's truly inspiring.",
+        name: "Aisha Patel",
+        title: "Data Scientist",
+    }
 ];
 
+// Helper to extract initials from a name (e.g. "John Doe" -> "JD")
+const getInitials = (name: string) => {
+    return name
+        .split(' ')
+        .map(n => n[0])
+        .join('')
+        .substring(0, 2)
+        .toUpperCase();
+};
+
 export function QuoteTickerSection() {
+    const [testimonials, setTestimonials] = useState<{ quote: string; name: string; title: string; avatarText: string }[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function fetchReviews() {
+            const supabase = createClient();
+            const { data: reviews, error } = await supabase
+                .from('website_reviews')
+                .select(`
+                    content,
+                    users (
+                        name,
+                        tagline
+                    )
+                `)
+                .order('created_at', { ascending: false })
+                .limit(10);
+
+            let mappedReviews: { quote: string; name: string; title: string; avatarText: string }[] = [];
+
+            if (error) {
+                console.error('Error fetching website reviews:', error);
+            } else if (reviews && reviews.length > 0) {
+                mappedReviews = reviews.map((review: { content: string; users: { name: string; tagline: string } | { name: string; tagline: string }[] | null }) => {
+                    const name = Array.isArray(review.users) ? review.users[0]?.name : review.users?.name || 'Anonymous User';
+                    return {
+                        quote: review.content,
+                        name: name,
+                        title: Array.isArray(review.users) ? review.users[0]?.tagline : review.users?.tagline || 'SwapSkill Member',
+                        avatarText: getInitials(name)
+                    };
+                });
+            }
+
+            // Combine DB reviews with Mock reviews to ensure slider is full
+            const finalReviews = [...mappedReviews];
+
+            // Add mock testimonials to fill out the slider if DB has few entries
+            mockTestimonials.forEach(mock => {
+                finalReviews.push({
+                    ...mock,
+                    avatarText: getInitials(mock.name)
+                });
+            });
+
+            setTestimonials(finalReviews);
+            setLoading(false);
+        }
+
+        fetchReviews();
+    }, []);
+
     return (
-        <section className="w-full py-16 overflow-hidden flex flex-col items-center justify-center relative z-20">
-
-            {/* Ticker Tape mimicking the '100+ Companies' strip */}
-            <div className="w-full bg-black/40 backdrop-blur-md border-y border-white/10 py-4 flex overflow-hidden">
-                <div className="flex animate-[scroll_20s_linear_infinite] whitespace-nowrap min-w-max">
-                    {/* Double the logos for seamless loop */}
-                    {[...LOGOS, ...LOGOS, ...LOGOS].map((logo, i) => (
-                        <div key={i} className="flex items-center gap-8 mx-8 opacity-40 hover:opacity-100 transition-opacity cursor-default">
-                            <span className="text-xl font-bold font-heading text-white tracking-widest uppercase">{logo}</span>
-                            <div className="w-2 h-2 rounded-full bg-primary/50"></div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* Quote Layout mimicking the stacked avatars and large text quote */}
-            <div className="mt-24 max-w-4xl px-4 text-center flex flex-col items-center relative z-10">
-
-                {/* Overlapping Avatars */}
-                <div className="flex -space-x-4 mb-8">
-                    <Avatar name="Sarah Jenkins" className="w-16 h-16 border-4 border-[var(--bg-base)] z-30 shadow-xl" />
-                    <Avatar name="John Doe" className="w-16 h-16 border-4 border-[var(--bg-base)] z-20 shadow-xl scale-95 opacity-90" />
-                    <Avatar name="Alice Smith" className="w-16 h-16 border-4 border-[var(--bg-base)] z-10 shadow-xl scale-90 opacity-70" />
-                </div>
-
-                {/* Large Quote */}
-                <h2 className="text-3xl md:text-5xl font-serif text-white leading-tight font-medium">
-                    &quot;SwapSkill made me realize my React skills were worth exactly the Spanish lessons I couldn&apos;t afford. <span className="text-primary italic">The purest form of learning.</span>&quot;
+        <section className="w-[96vw] max-w-[1400px] mx-auto py-16 overflow-hidden flex flex-col items-center justify-center relative z-20 transition-all duration-500 rounded-[3rem] mb-12 mt-12 bg-black/40 border border-white/5 shadow-2xl backdrop-blur-md">
+            <div className="w-full flex flex-col items-center sm:px-4 relative z-20 pt-10">
+                <h2 className="text-3xl md:text-5xl font-serif text-foreground leading-tight font-medium text-center mb-10">
+                    What Our Users <span className="text-primary italic">Say</span>
                 </h2>
 
-                <div className="mt-8 flex flex-col items-center">
-                    <span className="text-white font-bold tracking-wide uppercase">Sarah Jenkins</span>
-                    <span className="text-text-muted text-sm mt-1 border border-divider rounded-full px-3 py-1">Senior Frontend Engineer</span>
-                </div>
+                {loading ? (
+                    <div className="h-[20rem] flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+                    </div>
+                ) : testimonials.length > 0 ? (
+                    <InfiniteMovingCards
+                        items={testimonials}
+                        direction="right"
+                        speed="normal"
+                    />
+                ) : (
+                    <p className="text-muted text-sm mt-4 pb-12">We are still gathering feedback from our amazing community.</p>
+                )}
             </div>
-
         </section>
     );
 }

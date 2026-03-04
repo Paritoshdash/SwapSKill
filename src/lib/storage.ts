@@ -7,7 +7,6 @@ interface DatabaseSkill {
     category: string;
     type: 'Online' | 'Offline';
     duration_hours: number;
-    sc_cost: number;
     rating: number;
     created_at: string;
     provider_id: string;
@@ -22,7 +21,6 @@ interface SkillInput {
     category: string;
     type: 'Online' | 'Offline';
     duration_hours?: number;
-    sc_cost?: number;
 }
 
 export const storage = {
@@ -40,7 +38,6 @@ export const storage = {
                 category,
                 type,
                 duration_hours,
-                sc_cost,
                 rating,
                 created_at,
                 provider_id,
@@ -58,7 +55,6 @@ export const storage = {
             provider: item.users?.name || 'Unknown Provider',
             providerId: item.provider_id,
             rating: item.rating || 0,
-            price: `${item.sc_cost || 0} SC`,
             category: item.category,
             type: item.type,
             duration: `${item.duration_hours || 0} Hour${(item.duration_hours || 0) !== 1 ? 's' : ''}`,
@@ -75,8 +71,7 @@ export const storage = {
                 title: skill.title,
                 category: skill.category,
                 type: skill.type,
-                duration_hours: skill.duration_hours || 1, // fallback
-                sc_cost: skill.sc_cost || 10,              // fallback
+                duration_hours: skill.duration_hours || 1,
             }])
             .select('*')
             .single();
@@ -98,7 +93,6 @@ export const storage = {
                 category,
                 type,
                 duration_hours,
-                sc_cost,
                 rating,
                 created_at,
                 provider_id,
@@ -117,7 +111,6 @@ export const storage = {
             provider: item.users?.name || 'Unknown Provider',
             providerId: item.provider_id,
             rating: item.rating || 0,
-            price: `${item.sc_cost || 0} SC`,
             category: item.category,
             type: item.type,
             duration: `${item.duration_hours || 0} Hour${(item.duration_hours || 0) !== 1 ? 's' : ''}`,

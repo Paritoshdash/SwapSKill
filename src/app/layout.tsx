@@ -4,6 +4,7 @@ import "./globals.css";
 // import { TopAlertBar } from "@/components/layout/TopAlertBar";
 import { Navbar } from "@/components/layout/Navbar";
 import { AuthProvider } from "@/context/AuthContext";
+import { ThemeProvider } from "@/components/theme-provider";
 
 import { Toaster } from "react-hot-toast";
 
@@ -55,20 +56,27 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <body
         className={`${inter.variable} ${poppins.variable} font-sans antialiased flex flex-col min-h-screen bg-[var(--bg-base)] text-text-main`}
       >
         <AuthProvider>
-          {/* <TopAlertBar /> */}
-          <Navbar />
-          <div className="flex-1 overflow-x-hidden">
-            {children}
-          </div>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {/* <TopAlertBar /> */}
+            <Navbar />
+            <div className="flex-1 overflow-x-hidden">
+              {children}
+            </div>
+          </ThemeProvider>
           <Toaster
             position="top-center"
             toastOptions={{
-              className: "bg-[#1a1a1a] text-white border border-white/10",
+              className: "bg-card text-foreground border border-divider",
               style: {
                 background: 'var(--bg-card)',
                 color: 'var(--text-main)',

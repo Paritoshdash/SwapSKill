@@ -30,13 +30,13 @@ const features = [
 
 export function FeaturesGrid() {
     return (
-        <section id="features" className="py-24 bg-transparent text-white drop-shadow-md px-6 w-full h-full flex flex-col justify-center">
+        <section id="features" className="py-24 bg-transparent text-foreground drop-shadow-md px-6 w-full h-full flex flex-col justify-center">
             <div className="max-w-6xl mx-auto w-full">
                 <div className="text-center md:text-left mb-16 md:mb-24">
                     <h2 className="text-4xl md:text-6xl font-serif tracking-tight mb-6">
                         Everything you need <br className="hidden md:block" /> to grow efficiently.
                     </h2>
-                    <p className="text-gray-400 text-lg md:text-xl max-w-2xl">
+                    <p className="text-muted text-lg md:text-xl max-w-2xl">
                         Designed to remove friction from peer-to-peer learning so you can focus entirely on upskilling.
                     </p>
                 </div>
@@ -45,20 +45,20 @@ export function FeaturesGrid() {
                     {features.map((feature, index) => (
                         <div
                             key={index}
-                            className="p-8 rounded-2xl bg-[#1c1c1c] border border-white/5 hover:bg-[#222222] transition-colors"
+                            className="p-8 rounded-2xl bg-card border border-divider hover:bg-surface transition-colors"
                         >
                             <div className="text-4xl mb-6">{feature.icon}</div>
                             <h3 className="text-xl font-medium mb-3">{feature.title}</h3>
-                            <p className="text-gray-400 leading-relaxed text-sm">
+                            <p className="text-muted leading-relaxed text-sm">
                                 {feature.description}
                             </p>
                         </div>
                     ))}
 
                     {/* Empty callout card to balance the 5-item grid */}
-                    <div className="p-8 rounded-2xl bg-gradient-to-br from-[#2a2a2a] to-[#111111] border border-white/10 flex flex-col justify-center items-center text-center">
+                    <div className="p-8 rounded-2xl bg-gradient-to-br from-card to-background border border-divider flex flex-col justify-center items-center text-center">
                         <h3 className="text-xl font-serif italic mb-4">&quot;The fastest way to learn is to teach.&quot;</h3>
-                        <span className="text-sm text-gray-400 uppercase tracking-widest font-semibold">— SwapSkill Philosophy</span>
+                        <span className="text-sm text-muted uppercase tracking-widest font-semibold">— SwapSkill Philosophy</span>
                     </div>
                 </div>
             </div>

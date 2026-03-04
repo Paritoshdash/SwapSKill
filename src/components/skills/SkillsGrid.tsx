@@ -7,7 +7,6 @@ export interface Skill {
     provider: string;
     providerId: string;
     rating: number;
-    price: string;
     category: string;
     type: 'Online' | 'Offline';
     duration: string;
@@ -27,14 +26,14 @@ export function SkillsGrid({ skills, visibleCount, onLoadMore }: SkillsGridProps
 
     if (skills.length === 0) {
         return (
-            <div className="w-full flex flex-col items-center justify-center py-20 text-center bg-[#1a1a1a]/30 backdrop-blur-md rounded-[2rem] border border-white/5">
-                <div className="w-16 h-16 mb-4 rounded-full bg-white/5 flex items-center justify-center text-gray-500">
+            <div className="w-full flex flex-col items-center justify-center py-20 text-center bg-card/30 backdrop-blur-md rounded-[2rem] border border-divider">
+                <div className="w-16 h-16 mb-4 rounded-full bg-surface flex items-center justify-center text-muted">
                     <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">No skills found</h3>
-                <p className="text-gray-400">Try adjusting your filters or search query.</p>
+                <h3 className="text-xl font-bold text-foreground mb-2">No skills found</h3>
+                <p className="text-muted">Try adjusting your filters or search query.</p>
             </div>
         );
     }
@@ -52,7 +51,7 @@ export function SkillsGrid({ skills, visibleCount, onLoadMore }: SkillsGridProps
                 <div className="mt-12 flex justify-center">
                     <button
                         onClick={onLoadMore}
-                        className="px-8 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-white font-medium transition-all backdrop-blur-sm shadow-lg hover:shadow-xl hover:-translate-y-1"
+                        className="px-8 py-3 bg-section hover:bg-surface border border-divider rounded-full text-foreground font-medium transition-all backdrop-blur-sm shadow-lg hover:shadow-xl hover:-translate-y-1"
                     >
                         Load More Skills ({skills.length - visibleCount} left)
                     </button>

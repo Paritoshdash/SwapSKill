@@ -44,12 +44,12 @@ export function HomeIllustrations({ activeSection }: HomeIllustrationsProps) {
                             initial="initial"
                             animate="animate"
                             exit="exit"
-                            className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#121212] via-[#1a1a1a] to-[#0a0a0a]"
+                            className="absolute inset-0 w-full h-full bg-gradient-to-br from-background/30 via-surface/20 to-section/10"
                         >
                             {/* Abstract Hero Shapes */}
                             <div className="absolute top-[20%] left-[15%] w-[40vw] h-[40vw] rounded-full bg-primary/10 blur-[100px]" />
-                            <div className="absolute bottom-[10%] right-[10%] w-[30vw] h-[30vw] rounded-full bg-[#1a1c20] blur-[80px]" />
-                            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_80%)]" />
+                            <div className="absolute bottom-[10%] right-[10%] w-[30vw] h-[30vw] rounded-full bg-surface/50 blur-[80px]" />
+                            <div className="absolute inset-0 bg-[linear-gradient(rgba(120,120,120,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(120,120,120,0.02)_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_80%)] opacity-30" />
                         </motion.div>
                     )}
 
@@ -60,7 +60,7 @@ export function HomeIllustrations({ activeSection }: HomeIllustrationsProps) {
                             initial="initial"
                             animate="animate"
                             exit="exit"
-                            className="absolute inset-0 w-full h-full bg-gradient-to-r from-[#0f1012] via-[#1a1a1a] to-[#0f1012]"
+                            className="absolute inset-0 w-full h-full bg-gradient-to-r from-background/30 via-surface/20 to-background/30"
                         >
                             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] rounded-full bg-secondary/5 blur-[150px]" />
                         </motion.div>
@@ -73,10 +73,10 @@ export function HomeIllustrations({ activeSection }: HomeIllustrationsProps) {
                             initial="initial"
                             animate="animate"
                             exit="exit"
-                            className="absolute inset-0 w-full h-full bg-gradient-to-bl from-[#121212] via-[#0a0a0a] to-[#121212]"
+                            className="absolute inset-0 w-full h-full bg-gradient-to-bl from-surface/30 via-background/20 to-surface/30"
                         >
                             <div className="absolute top-[40%] right-[20%] w-[50vw] h-[50vw] rounded-full bg-primary/5 blur-[120px]" />
-                            <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_20px,rgba(255,255,255,0.01)_20px,rgba(255,255,255,0.01)_21px)]" />
+                            <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_20px,rgba(120,120,120,0.01)_20px,rgba(120,120,120,0.01)_21px)]" />
                         </motion.div>
                     )}
 
@@ -87,7 +87,7 @@ export function HomeIllustrations({ activeSection }: HomeIllustrationsProps) {
                             initial="initial"
                             animate="animate"
                             exit="exit"
-                            className="absolute inset-0 w-full h-full bg-gradient-to-tr from-[#1a1a1a] via-[#121212] to-[#0a0a0a]"
+                            className="absolute inset-0 w-full h-full bg-gradient-to-tr from-surface/30 via-background/20 to-section/10"
                         >
                             <div className="absolute bottom-[20%] left-[10%] w-[40vw] h-[40vw] rounded-full bg-primary/10 blur-[120px]" />
                         </motion.div>
@@ -101,7 +101,7 @@ export function HomeIllustrations({ activeSection }: HomeIllustrationsProps) {
                             initial="initial"
                             animate="animate"
                             exit="exit"
-                            className="absolute inset-0 w-full h-full bg-gradient-to-b from-[#0a0a0a] to-[#1a1a1a]"
+                            className="absolute inset-0 w-full h-full bg-gradient-to-b from-background/30 to-surface/20"
                         >
                             <div className="absolute top-1/2 right-[10%] -translate-y-1/2 w-[30vw] h-[30vw] rounded-full bg-secondary/10 blur-[100px]" />
                         </motion.div>
@@ -114,7 +114,7 @@ export function HomeIllustrations({ activeSection }: HomeIllustrationsProps) {
                             initial="initial"
                             animate="animate"
                             exit="exit"
-                            className="absolute inset-0 w-full h-full bg-black"
+                            className="absolute inset-0 w-full h-full bg-background/30"
                         >
                             <div className="absolute bottom-[-10%] left-1/2 -translate-x-1/2 w-[60vw] h-[40vw] rounded-[100%] bg-primary/20 blur-[150px]" />
                         </motion.div>
@@ -127,7 +127,7 @@ export function HomeIllustrations({ activeSection }: HomeIllustrationsProps) {
                             initial="initial"
                             animate="animate"
                             exit="exit"
-                            className="absolute inset-0 w-full h-full bg-gradient-to-t from-[#0a0a0a] via-[#121212] to-[#1a1a1a]"
+                            className="absolute inset-0 w-full h-full bg-gradient-to-t from-background/30 via-surface/20 to-section/10"
                         >
                             <div className="absolute bottom-[-10%] left-1/2 -translate-x-1/2 w-[60vw] h-[40vw] rounded-[100%] bg-primary/10 blur-[120px]" />
                         </motion.div>

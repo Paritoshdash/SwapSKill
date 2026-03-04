@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 
@@ -14,6 +14,7 @@ export interface AppUser {
     tagline?: string;
     profilePic?: string;
     level?: string;
+    completed_swaps?: number;
     sc_balance?: number;
 }
 
@@ -34,9 +35,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<AppUser | null>(null);
     const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const supabase = createClient();
+    const supabase = useMemo(() => createClient(), []);
 
-    const fetchProfile = async (authId: string) => {
+    const fetchProfile = useCallback(async (authId: string) => {
         const { data, error } = await supabase
             .from('users')
             .select('*')
@@ -53,18 +54,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 tagline: data.tagline,
                 profilePic: data.profile_pic,
                 level: data.level,
-                sc_balance: data.sc_balance
+                completed_swaps: data.completed_swaps
             });
             setIsAuthenticated(true);
         } else if (error) {
             console.error('Error fetching user profile:', error);
-            // Even if profile fails, user is auth'd with Supabase
             setUser(null);
             setIsAuthenticated(true);
         }
-    };
+    }, [supabase]);
 
-    const refreshUser = async () => {
+    const refreshUser = useCallback(async () => {
         setIsLoading(true);
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
@@ -76,7 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setSupabaseUser(null);
         }
         setIsLoading(false);
-    };
+    }, [supabase, fetchProfile]);
 
     useEffect(() => {
         refreshUser();
@@ -97,7 +97,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return () => {
             authListener.subscription.unsubscribe();
         };
-    }, []);
+    }, [supabase, refreshUser, fetchProfile]);
 
     const signOut = async () => {
         await supabase.auth.signOut();
@@ -109,8 +109,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const updateProfile = async (updates: Partial<AppUser>) => {
         if (!user) return;
 
-        // Map AppUser fields to Supabase DB columns
-        const dbUpdates: any = {};
+        const dbUpdates: Record<string, string | number | boolean | undefined> = {};
         if (updates.name !== undefined) dbUpdates.name = updates.name;
         if (updates.bio !== undefined) dbUpdates.bio = updates.bio;
         if (updates.tagline !== undefined) dbUpdates.tagline = updates.tagline;
@@ -142,4 +141,3 @@ export function useAuth() {
     }
     return context;
 }
-

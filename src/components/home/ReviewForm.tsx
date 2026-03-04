@@ -56,7 +56,7 @@ export function ReviewForm() {
     };
 
     return (
-        <section className="w-full py-20 px-4 md:px-12 relative z-20">
+        <section className="w-[96vw] max-w-[1400px] mx-auto py-20 px-4 md:px-12 relative z-20 bg-background/40 backdrop-blur-md rounded-[3rem] border border-white/5 shadow-2xl mb-12 mt-12">
             <div className="max-w-[800px] mx-auto">
                 <div className="p-8 md:p-12 rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl shadow-2xl relative overflow-hidden">
                     {/* Background Glow */}
