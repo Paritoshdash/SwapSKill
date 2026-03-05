@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Footer } from '@/components/layout/Footer';
+import { useTheme } from 'next-themes';
 
 import { QuoteTickerSection } from '@/components/home/QuoteTickerSection';
 import { HeroSection } from '@/components/ui/hero-section-with-smooth-bg-shader';
@@ -14,6 +15,8 @@ import { JoinCtaSection } from '@/components/home/JoinCtaSection';
 export type ActiveHomeSection = 'hero' | 'ticker' | 'bento' | 'testimonials' | 'steps' | 'cta' | 'footer';
 
 export default function Home() {
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   const heroRef = useRef<HTMLElement>(null);
   const tickerRef = useRef<HTMLDivElement>(null);
@@ -23,9 +26,11 @@ export default function Home() {
   const ctaRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLDivElement>(null);
 
-  // Placeholder for future scroll logic if needed
   useEffect(() => {
+    setMounted(true);
   }, []);
+
+  const isDark = mounted && resolvedTheme === 'dark';
 
   return (
     <div className="min-h-screen bg-transparent selection:bg-primary/30 selection:text-primary font-sans relative flex flex-col gap-12 pb-0">
@@ -37,8 +42,8 @@ export default function Home() {
           highlightText="Grow Together."
           description="Swap your expertise for new skills. No cash required—just passionate individuals learning from each other in a powerful peer-to-peer ecosystem."
           buttonText="Start building free"
-          colors={["#000000", "#1a1000", "#F5B21A", "#09090b", "#E58E00", "#000000"]}
-          veilOpacity="bg-black/50"
+          colors={isDark ? ["#000000", "#1a1000", "#F5B21A", "#09090b", "#E58E00", "#000000"] : ["#FFFFFF", "#F9FAFB", "#fef3c7", "#fef08a", "#fde68a", "#fcd34d"]}
+          veilOpacity={isDark ? "bg-black/50" : "bg-white/40"}
           distortion={0.5}
           swirl={0.8}
           speed={0.42}

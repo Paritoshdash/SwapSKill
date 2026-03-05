@@ -94,12 +94,12 @@ export function HeroSection({
                     >
                         {title} <span className="text-primary">{highlightText}</span>
                     </h1>
-                    <p className={`text-lg sm:text-xl text-foreground/80 text-pretty max-w-2xl mx-auto leading-relaxed mb-10 px-4 ${descriptionClassName}`}>
+                    <p className={`text-lg sm:text-xl text-secondary-text dark:text-foreground/80 text-pretty max-w-2xl mx-auto leading-relaxed mb-10 px-4 ${descriptionClassName}`}>
                         {description}
                     </p>
                     <button
                         onClick={handleButtonClick}
-                        className={`px-6 py-4 sm:px-8 sm:py-6 rounded-full border-4 bg-[rgba(63,63,63,1)] border-card text-sm sm:text-base text-white hover:bg-[rgba(63,63,63,0.9)] transition-colors ${buttonClassName}`}
+                        className={`px-6 py-4 sm:px-8 sm:py-5 rounded-[20px] font-bold bg-foreground text-background text-sm sm:text-base border-none shadow-[inset_0px_3px_6px_rgba(255,255,255,0.15),inset_0px_-3px_6px_rgba(0,0,0,0.4),0px_6px_15px_rgba(0,0,0,0.1)] hover:-translate-y-[1px] hover:shadow-[inset_0px_4px_8px_rgba(255,255,255,0.2),inset_0px_-4px_8px_rgba(0,0,0,0.5),0px_8px_20px_rgba(0,0,0,0.15)] active:translate-y-[2px] active:shadow-[inset_0px_1px_2px_rgba(255,255,255,0.1),inset_0px_-1px_2px_rgba(0,0,0,0.3),0px_2px_5px_rgba(0,0,0,0.1)] transition-all duration-300 ${buttonClassName}`}
                     >
                         {buttonText}
                     </button>

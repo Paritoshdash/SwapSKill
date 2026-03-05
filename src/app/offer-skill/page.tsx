@@ -3,10 +3,11 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import { storage } from '@/lib/storage';
+import { createSkill } from '@/actions/skills';
+import toast from 'react-hot-toast';
 
 export default function OfferSkillPage() {
-    const { user, isAuthenticated, isLoading } = useAuth();
+    const { isAuthenticated, isLoading } = useAuth();
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -22,22 +23,16 @@ export default function OfferSkillPage() {
         setIsSubmitting(true);
 
         const formData = new FormData(e.currentTarget);
+        const result = await createSkill(formData);
 
-        if (user) {
-            const newSkill = {
-                title: formData.get('title') as string,
-                providerId: user.id, // provider mapped to user.name internally
-                rating: 0,
-                category: formData.get('category') as string,
-                type: formData.get('format') as 'Online' | 'Offline',
-                duration_hours: 1, // Defaulting for MVP
-                sc_cost: 10,      // Defaulting for MVP
-            };
-
-            await storage.addSkill(newSkill);
+        if (result?.error) {
+            toast.error(result.error);
+            setIsSubmitting(false);
+            return;
         }
 
         setIsSubmitting(false);
+        toast.success("Skill published successfully!");
         router.push('/skills');
     };
 
@@ -99,7 +94,7 @@ export default function OfferSkillPage() {
                                     Format
                                 </label>
                                 <select
-                                    name="format"
+                                    name="type"
                                     required
                                     defaultValue="Online"
                                     className="w-full bg-section border border-divider rounded-xl py-4 px-4 text-foreground appearance-none focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all cursor-pointer"
@@ -142,7 +137,7 @@ export default function OfferSkillPage() {
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="w-full mt-8 bg-primary hover:bg-secondary text-background font-medium py-4 rounded-xl transition-all shadow-lg hover:shadow-primary/25 flex justify-center items-center gap-2 group relative overflow-hidden disabled:opacity-70 text-lg"
+                            className="w-full mt-8 bg-primary font-bold text-background py-4 rounded-[20px] transition-all shadow-[inset_0px_3px_6px_rgba(255,255,255,0.4),inset_0px_-3px_6px_rgba(0,0,0,0.15),0px_6px_15px_rgba(0,0,0,0.1)] hover:-translate-y-[1px] hover:shadow-[inset_0px_4px_8px_rgba(255,255,255,0.5),inset_0px_-4px_8px_rgba(0,0,0,0.2),0px_8px_20px_rgba(0,0,0,0.15)] active:translate-y-[2px] active:scale-[0.98] active:shadow-[inset_0px_2px_4px_rgba(255,255,255,0.3),inset_0px_-2px_4px_rgba(0,0,0,0.1),0px_2px_5px_rgba(0,0,0,0.1)] flex justify-center items-center gap-2 group relative overflow-hidden disabled:opacity-70 text-lg"
                         >
                             {isSubmitting ? (
                                 <div className="w-6 h-6 border-2 border-background/30 border-t-background rounded-full animate-spin"></div>

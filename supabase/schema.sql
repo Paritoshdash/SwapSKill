@@ -52,8 +52,8 @@ CREATE TABLE skills (
   title TEXT NOT NULL,
   category skill_category NOT NULL,
   type skill_type NOT NULL,
-  duration_hours NUMERIC NOT NULL,
-  rating NUMERIC DEFAULT 0,
+  duration_hours NUMERIC NOT NULL CHECK (duration_hours > 0),
+  rating NUMERIC DEFAULT 0 CHECK (rating >= 0 AND rating <= 5),
   review_count INTEGER DEFAULT 0,
   is_active BOOLEAN DEFAULT TRUE,
   search_vector tsvector GENERATED ALWAYS AS (to_tsvector('english', title || ' ' || category::text)) STORED,
@@ -171,7 +171,7 @@ CREATE INDEX IF NOT EXISTS idx_reviews_reviewer_id ON reviews(reviewer_id);
 CREATE INDEX IF NOT EXISTS idx_skills_search ON skills USING GIN(search_vector);
 CREATE UNIQUE INDEX idx_unique_active_skill ON skills (provider_id, title) WHERE deleted_at IS NULL;
 
--- Atomic RPC: Book Session (Trust Mode)
+-- Atomic RPC: Book Session (Secure Mode)
 CREATE OR REPLACE FUNCTION public.book_session(
   p_seeker_id UUID,
   p_provider_id UUID,
@@ -183,7 +183,12 @@ AS $$
 DECLARE
   v_session_id UUID;
 BEGIN
-  -- Create Session (no balance checks required)
+  -- Security check: Ensure the caller is the seeker
+  IF auth.uid() != p_seeker_id THEN
+    RAISE EXCEPTION 'Unauthorized: You can only book sessions for yourself.';
+  END IF;
+
+  -- Create Session (no balance checks required currently in trust mode)
   INSERT INTO sessions (seeker_id, provider_id, skill_id, status)
   VALUES (p_seeker_id, p_provider_id, p_skill_id, 'active')
   RETURNING id INTO v_session_id;
@@ -192,7 +197,7 @@ BEGIN
 END;
 $$;
 
--- Atomic RPC: Complete Session (Trust Mode)
+-- Atomic RPC: Complete Session (Secure Mode)
 CREATE OR REPLACE FUNCTION public.complete_session(
   p_session_id UUID
 ) RETURNS BOOLEAN
@@ -207,6 +212,11 @@ BEGIN
 
   IF NOT FOUND THEN
     RAISE EXCEPTION 'Session not found.';
+  END IF;
+
+  -- Security check: Ensure the caller is either the seeker or provider of the session
+  IF auth.uid() != v_session.seeker_id AND auth.uid() != v_session.provider_id THEN
+    RAISE EXCEPTION 'Unauthorized: You do not have permission to modify this session.';
   END IF;
 
   IF v_session.status = 'completed' THEN

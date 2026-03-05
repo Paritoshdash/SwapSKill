@@ -96,7 +96,7 @@ export function QuoteTickerSection() {
     }, []);
 
     return (
-        <section className="w-[96vw] max-w-[1400px] mx-auto py-16 overflow-hidden flex flex-col items-center justify-center relative z-20 transition-all duration-500 rounded-[3rem] mb-12 mt-12 bg-black/40 border border-white/5 shadow-2xl backdrop-blur-md">
+        <section className="w-[96vw] max-w-[1400px] mx-auto py-16 overflow-hidden flex flex-col items-center justify-center relative z-20 transition-all duration-500 rounded-[3rem] mb-12 mt-12 bg-surface dark:bg-black/40 border border-divider dark:border-white/5 shadow-md dark:shadow-2xl backdrop-blur-md">
             <div className="w-full flex flex-col items-center sm:px-4 relative z-20 pt-10">
                 <h2 className="text-3xl md:text-5xl font-serif text-foreground leading-tight font-medium text-center mb-10">
                     What Our Users <span className="text-primary italic">Say</span>
@@ -113,7 +113,7 @@ export function QuoteTickerSection() {
                         speed="normal"
                     />
                 ) : (
-                    <p className="text-muted text-sm mt-4 pb-12">We are still gathering feedback from our amazing community.</p>
+                    <p className="text-secondary-text dark:text-muted text-sm mt-4 pb-12">We are still gathering feedback from our amazing community.</p>
                 )}
             </div>
         </section>

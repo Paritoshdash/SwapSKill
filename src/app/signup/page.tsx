@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { AuthLayout } from '@/components/auth/AuthLayout';
 import { SignupForm } from '@/components/auth/SignupForm';
 
@@ -10,8 +11,15 @@ export const metadata = {
 export default function SignupPage() {
     return (
         <AuthLayout
-            title="Create an account"
-            subtitle="Join the community of skill swappers today"
+            title="Sign Up"
+            subtitle={
+                <span className="text-gray-600 text-[15px]">
+                    Already have an account?{' '}
+                    <Link href="/login" className="text-black font-semibold hover:underline">
+                        Log In
+                    </Link>
+                </span>
+            }
         >
             <SignupForm />
         </AuthLayout>

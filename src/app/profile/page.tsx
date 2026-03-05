@@ -7,12 +7,16 @@ import Image from 'next/image';
 import { SkillCard } from '@/components/skills/SkillCard';
 import { storage } from '@/lib/storage';
 import { Skill } from '@/components/skills/SkillsGrid';
+import { updateUserProfile } from '@/actions/users';
+import toast from 'react-hot-toast';
 
 export default function ProfilePage() {
     const { user, isAuthenticated, isLoading, updateProfile } = useAuth();
     const router = useRouter();
     const [activeTab, setActiveTab] = useState<'offered' | 'learning' | 'reviews' | 'settings'>('offered');
     const [userSkills, setUserSkills] = useState<Skill[]>([]);
+    const [isEditingProfile, setIsEditingProfile] = useState(false);
+    const [isSavingProfile, setIsSavingProfile] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,6 +28,23 @@ export default function ProfilePage() {
                 updateProfile({ profilePic: base64String });
             };
             reader.readAsDataURL(file);
+        }
+    };
+
+    const handleProfileSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setIsSavingProfile(true);
+        const formData = new FormData(e.currentTarget);
+
+        const result = await updateUserProfile(formData);
+        setIsSavingProfile(false);
+
+        if (result.error) {
+            toast.error(result.error);
+        } else {
+            toast.success("Profile updated successfully!");
+            setIsEditingProfile(false);
+            window.location.reload(); // Quick refresh to reflect server data locally
         }
     };
 
@@ -104,7 +125,10 @@ export default function ProfilePage() {
                         </div>
 
                         <div className="shrink-0 flex flex-col gap-3 w-full md:w-auto mt-4 md:mt-0">
-                            <button className="px-6 py-3 w-full md:w-auto bg-transparent hover:bg-primary/10 text-primary font-medium rounded-xl border border-primary transition-colors flex items-center justify-center gap-2 shadow-[0_0_10px_rgba(245,178,26,0.1)] hover:shadow-[0_0_15px_rgba(245,178,26,0.3)]">
+                            <button
+                                onClick={() => setIsEditingProfile(true)}
+                                className="px-6 py-3 w-full md:w-auto bg-surface text-primary border-none font-bold rounded-[20px] transition-all flex items-center justify-center gap-2 shadow-[inset_0px_3px_6px_rgba(245,158,11,0.15),inset_0px_-3px_6px_rgba(0,0,0,0.05),0px_6px_15px_rgba(0,0,0,0.05)] hover:-translate-y-[1px] hover:shadow-[inset_0px_4px_8px_rgba(245,158,11,0.25),inset_0px_-4px_8px_rgba(0,0,0,0.08),0px_8px_20px_rgba(0,0,0,0.08)] active:translate-y-[2px] active:scale-[0.98] active:shadow-[inset_0px_1px_2px_rgba(245,158,11,0.1),inset_0px_-1px_2px_rgba(0,0,0,0.03),0px_2px_5px_rgba(0,0,0,0.05)]"
+                            >
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                                 Edit Profile
                             </button>
@@ -112,15 +136,47 @@ export default function ProfilePage() {
                     </div>
                 </div>
 
+                {/* Edit Profile Modal */}
+                {isEditingProfile && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
+                        <div className="bg-card border border-divider rounded-[2rem] p-8 max-w-lg w-full shadow-2xl animate-fade-in-up">
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-2xl font-bold text-foreground">Edit Profile</h3>
+                                <button onClick={() => setIsEditingProfile(false)} className="text-muted hover:text-foreground">
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </button>
+                            </div>
+                            <form onSubmit={handleProfileSubmit} className="space-y-4">
+                                <div className="space-y-1">
+                                    <label className="text-xs font-semibold text-muted ml-1">Name</label>
+                                    <input type="text" name="name" defaultValue={user?.name || ''} className="w-full bg-section border border-divider rounded-xl py-3 px-4 focus:border-primary transition-all outline-none text-foreground" required />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-semibold text-muted ml-1">Tagline</label>
+                                    <input type="text" name="tagline" defaultValue={user?.tagline || ''} className="w-full bg-section border border-divider rounded-xl py-3 px-4 focus:border-primary transition-all outline-none text-foreground" />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-semibold text-muted ml-1">Bio</label>
+                                    <textarea name="bio" defaultValue={user?.bio || ''} className="w-full bg-section border border-divider rounded-xl py-3 px-4 focus:border-primary transition-all outline-none resize-none text-foreground" rows={3}></textarea>
+                                </div>
+                                <div className="pt-4 flex gap-4">
+                                    <button type="button" onClick={() => setIsEditingProfile(false)} className="flex-1 py-4 font-bold rounded-[20px] bg-surface text-foreground border-none">Cancel</button>
+                                    <button type="submit" disabled={isSavingProfile} className="flex-2 py-4 px-8 font-bold rounded-[20px] bg-primary text-background disabled:opacity-70 shadow-lg hover:shadow-primary/30 transition-all">{isSavingProfile ? 'Saving...' : 'Save Changes'}</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
+
                 {/* Interactive Tabs Header */}
                 <div className="flex overflow-x-auto hide-scrollbar gap-2 mb-8 bg-section p-2 rounded-2xl border border-divider backdrop-blur-md">
                     {(['offered', 'learning', 'reviews', 'settings'] as const).map((tab) => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`px-5 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition-all ${activeTab === tab
-                                ? 'bg-primary text-background shadow-sm'
-                                : 'text-muted hover:text-primary hover:bg-primary/5 border border-transparent'
+                            className={`px-5 py-2.5 rounded-[16px] text-sm font-bold whitespace-nowrap transition-all duration-300 ${activeTab === tab
+                                ? 'bg-primary text-background shadow-[inset_0px_3px_6px_rgba(255,255,255,0.4),inset_0px_-3px_6px_rgba(0,0,0,0.15),0px_4px_10px_rgba(0,0,0,0.1)]'
+                                : 'bg-surface text-foreground shadow-[inset_0px_2px_4px_rgba(255,255,255,0.8),inset_0px_-2px_4px_rgba(0,0,0,0.05),0px_2px_5px_rgba(0,0,0,0.05)] hover:shadow-[inset_0px_3px_6px_rgba(255,255,255,1),inset_0px_-3px_6px_rgba(0,0,0,0.08),0px_4px_8px_rgba(0,0,0,0.08)] hover:-translate-y-[1px]'
                                 }`}
                         >
                             {tab === 'offered' && 'My Skills Offered'}
@@ -165,7 +221,7 @@ export default function ProfilePage() {
                             <div className="w-20 h-20 bg-secondary/10 rounded-full flex items-center justify-center mb-6 text-secondary text-3xl">📚</div>
                             <h3 className="text-2xl font-heading font-bold text-foreground mb-2">No learning history yet</h3>
                             <p className="text-muted max-w-md mx-auto mb-8">You haven&apos;t initiated any skill swaps to learn something new yet. Browse the marketplace to find your first mentor!</p>
-                            <button onClick={() => router.push('/skills')} className="px-8 py-3 bg-secondary hover:bg-[#ff9d1a] border border-secondary text-background font-semibold rounded-full transition-all shadow-[0_0_20px_rgba(229,142,0,0.3)] hover:shadow-[0_0_30px_rgba(229,142,0,0.5)]">
+                            <button onClick={() => router.push('/skills')} className="px-8 py-3 bg-primary text-background font-bold rounded-[20px] transition-all shadow-[inset_0px_3px_6px_rgba(255,255,255,0.4),inset_0px_-3px_6px_rgba(0,0,0,0.15),0px_6px_15px_rgba(0,0,0,0.1)] hover:-translate-y-[1px] hover:shadow-[inset_0px_4px_8px_rgba(255,255,255,0.5),inset_0px_-4px_8px_rgba(0,0,0,0.2),0px_8px_20px_rgba(0,0,0,0.15)] active:translate-y-[2px] active:scale-[0.98] active:shadow-[inset_0px_2px_4px_rgba(255,255,255,0.3),inset_0px_-2px_4px_rgba(0,0,0,0.1),0px_2px_5px_rgba(0,0,0,0.1)]">
                                 Browse Skills
                             </button>
                         </div>
@@ -182,8 +238,11 @@ export default function ProfilePage() {
                             </div>
 
                             <div className="space-y-6">
-                                <div className="text-center py-10 bg-section border border-divider rounded-2xl">
-                                    <p className="text-muted">No reviews yet. Complete a swap to earn your first review!</p>
+                                <div className="text-center py-12 bg-section border border-divider rounded-2xl flex flex-col items-center">
+                                    <p className="text-muted mb-6">No reviews yet. Complete a swap to earn your first review!</p>
+                                    <button onClick={() => router.push('/skills')} className="px-6 py-3 bg-primary text-background font-bold rounded-[20px] transition-all shadow-[inset_0px_3px_6px_rgba(255,255,255,0.4),inset_0px_-3px_6px_rgba(0,0,0,0.15),0px_6px_15px_rgba(0,0,0,0.1)] hover:-translate-y-[1px] hover:shadow-[inset_0px_4px_8px_rgba(255,255,255,0.5),inset_0px_-4px_8px_rgba(0,0,0,0.2),0px_8px_20px_rgba(0,0,0,0.15)] active:translate-y-[2px] active:scale-[0.98]">
+                                        Explore Skills
+                                    </button>
                                 </div>
                             </div>
                         </div>

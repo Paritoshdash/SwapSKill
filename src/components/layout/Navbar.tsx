@@ -78,12 +78,12 @@ export function Navbar() {
                     {isAuthenticated ? (
                         <button
                             onClick={signOut}
-                            className="hidden md:flex items-center gap-2 bg-transparent border border-divider text-secondary-text dark:text-muted hover:text-foreground hover:border-foreground px-5 py-2.5 rounded-[12px] transition-all font-medium text-sm focus:outline-none focus:ring-2 focus:ring-primary active:scale-[0.98]"
+                            className="hidden md:flex items-center gap-2 bg-surface text-foreground font-bold border border-divider rounded-[20px] px-5 py-2.5 shadow-[inset_0px_3px_6px_rgba(255,255,255,0.8),inset_0px_-3px_6px_rgba(0,0,0,0.05),0px_6px_15px_rgba(0,0,0,0.05)] hover:-translate-y-[1px] hover:shadow-[inset_0px_4px_8px_rgba(255,255,255,1),inset_0px_-4px_8px_rgba(0,0,0,0.08),0px_8px_20px_rgba(0,0,0,0.08)] active:translate-y-[2px] active:shadow-[inset_0px_1px_2px_rgba(255,255,255,0.6),inset_0px_-1px_2px_rgba(0,0,0,0.03),0px_2px_5px_rgba(0,0,0,0.05)] transition-all duration-300 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                         >
                             Log out
                         </button>
                     ) : (
-                        <Link href="/signup" className="hidden md:flex items-center gap-2 bg-foreground text-background dark:bg-primary dark:text-background px-6 py-2.5 rounded-[12px] shadow-[0_4px_10px_rgba(0,0,0,0.1)] dark:shadow-[0_0_15px_rgba(245,178,26,0.2)] hover:bg-foreground/90 dark:hover:bg-secondary dark:hover:shadow-[0_0_25px_rgba(229,142,0,0.5)] transition-all font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-primary active:scale-[0.98]">
+                        <Link href="/signup" className="hidden md:flex items-center gap-2 bg-foreground dark:bg-primary text-background px-6 py-2.5 rounded-[20px] font-bold text-sm shadow-[inset_0px_3px_6px_rgba(255,255,255,0.15),inset_0px_-3px_6px_rgba(0,0,0,0.4),0px_6px_15px_rgba(0,0,0,0.1)] dark:shadow-[inset_0px_3px_6px_rgba(255,255,255,0.4),inset_0px_-3px_6px_rgba(0,0,0,0.15),0px_6px_15px_rgba(0,0,0,0.1)] hover:-translate-y-[1px] hover:shadow-[inset_0px_4px_8px_rgba(255,255,255,0.2),inset_0px_-4px_8px_rgba(0,0,0,0.5),0px_8px_20px_rgba(0,0,0,0.15)] dark:hover:shadow-[inset_0px_4px_8px_rgba(255,255,255,0.5),inset_0px_-4px_8px_rgba(0,0,0,0.2),0px_8px_20px_rgba(0,0,0,0.15)] active:translate-y-[2px] active:shadow-[inset_0px_1px_2px_rgba(255,255,255,0.1),inset_0px_-1px_2px_rgba(0,0,0,0.3),0px_2px_5px_rgba(0,0,0,0.1)] dark:active:shadow-[inset_0px_2px_4px_rgba(255,255,255,0.3),inset_0px_-2px_4px_rgba(0,0,0,0.1),0px_2px_5px_rgba(0,0,0,0.1)] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary">
                             Join SwapSkill
                         </Link>
                     )}

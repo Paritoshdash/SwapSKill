@@ -4,11 +4,14 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
+import toast from 'react-hot-toast';
+import { bookSession } from '@/actions/sessions';
 
 export default function BookSessionPage({ params }: { params: Promise<{ id: string }> }) {
     const resolvedParams = React.use(params);
     const { user, isAuthenticated, isLoading, refreshUser } = useAuth();
     const router = useRouter();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [skill, setSkill] = useState<any>(null);
     const [isBooking, setIsBooking] = useState(false);
 
@@ -39,21 +42,18 @@ export default function BookSessionPage({ params }: { params: Promise<{ id: stri
         if (!user || !skill) return;
         setIsBooking(true);
 
-        const { error } = await supabase.rpc('book_session', {
-            p_seeker_id: user.id,
-            p_provider_id: skill.provider_id,
-            p_skill_id: skill.id
-        });
+        const result = await bookSession(skill.id, skill.provider_id);
 
-        if (error) {
-            console.error("Booking failed:", error);
-            alert("Booking failed: " + error.message);
+        if (result.error) {
+            console.error("Booking failed:", result.error);
+            toast.error("Booking failed: " + result.error);
             setIsBooking(false);
             return;
         }
 
         await refreshUser();
         setIsBooking(false);
+        toast.success("Collaboration request sent!");
         router.push('/messages');
     };
 

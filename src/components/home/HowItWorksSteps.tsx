@@ -69,7 +69,7 @@ const steps = [
 
 export function HowItWorksSteps() {
     return (
-        <section className="w-[96vw] max-w-[1400px] mx-auto py-24 relative z-20 bg-background/40 backdrop-blur-md transition-all duration-500 rounded-[3rem] border border-white/5 shadow-2xl mb-12 mt-12 overflow-hidden">
+        <section className="w-[96vw] max-w-[1400px] mx-auto py-24 relative z-20 bg-surface dark:bg-background/40 backdrop-blur-md transition-all duration-500 rounded-[3rem] border border-divider dark:border-white/5 shadow-md dark:shadow-2xl mb-12 mt-12 overflow-hidden">
             <div className="max-w-[1400px] mx-auto px-6 md:px-12 text-center md:text-left">
 
                 <h2 className="text-5xl md:text-6xl lg:text-[7vw] font-heading font-black text-foreground leading-[0.85] tracking-tighter mb-16">
@@ -78,12 +78,12 @@ export function HowItWorksSteps() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
                     {steps.map((step, i) => (
-                        <div key={i} className="bg-card rounded-[32px] p-8 md:p-10 border border-divider shadow-xl hover:border-primary/20 hover:-translate-y-2 transition-all duration-300 group min-h-[450px] flex flex-col justify-between">
+                        <div key={i} className="bg-card rounded-[32px] p-8 md:p-10 border border-divider shadow-sm hover:shadow-lg hover:border-primary/20 hover:-translate-y-2 transition-all duration-300 group min-h-[450px] flex flex-col justify-between">
 
                             <div className="mb-10 text-left">
                                 <span className="inline-block px-3 py-1 bg-surface rounded-full text-xs font-bold text-foreground mb-6 border border-divider">{step.num}</span>
                                 <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4 tracking-tight group-hover:text-primary transition-colors">{step.title}</h3>
-                                <p className="text-muted font-medium text-[15px] leading-relaxed">
+                                <p className="text-secondary-text dark:text-muted font-medium text-[15px] leading-relaxed">
                                     {step.desc}
                                 </p>
                             </div>

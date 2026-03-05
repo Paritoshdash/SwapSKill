@@ -18,7 +18,7 @@ export function FeatureBentoSection() {
     const yGraph = useTransform(scrollYProgress, [0, 1], [80, -80]);
 
     return (
-        <section ref={containerRef} className="w-[96vw] max-w-[1400px] mx-auto py-20 px-4 md:px-8 relative z-20 bg-background/40 backdrop-blur-md text-foreground transition-all duration-500 rounded-[3rem] border border-white/5 shadow-2xl mb-12 mt-12 overflow-hidden">
+        <section ref={containerRef} className="w-[96vw] max-w-[1400px] mx-auto py-20 px-4 md:px-8 relative z-20 bg-surface dark:bg-background/40 backdrop-blur-md text-foreground transition-all duration-500 rounded-[3rem] border border-divider dark:border-white/5 shadow-md dark:shadow-2xl mb-12 mt-12 overflow-hidden">
             {/* Main Rounded Container */}
             <div className="max-w-[1400px] mx-auto p-8 md:p-16">
 
@@ -33,10 +33,10 @@ export function FeatureBentoSection() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
 
                     {/* Bento Card 1: Smart Matching */}
-                    <div className="bg-card rounded-[32px] p-8 flex flex-col justify-between group overflow-hidden border border-divider hover:border-primary/30 transition-all duration-500 min-h-[400px] shadow-sm">
+                    <div className="bg-card rounded-[32px] p-8 flex flex-col justify-between group overflow-hidden border border-divider hover:border-primary/30 transition-all duration-500 min-h-[400px] shadow-sm hover:shadow-md hover:-translate-y-1">
                         <div>
                             <h3 className="text-2xl font-bold text-foreground mb-3 font-heading">Precision Matching Algorithm</h3>
-                            <p className="text-muted leading-relaxed">
+                            <p className="text-secondary-text dark:text-muted leading-relaxed">
                                 Our platform analyzes your offered skills and learning goals to pair you with the perfect exchange partner in seconds.
                             </p>
                         </div>
@@ -67,14 +67,14 @@ export function FeatureBentoSection() {
                     </div>
 
                     {/* Bento Card 2: Structured Sessions */}
-                    <div className="bg-card rounded-[32px] p-8 flex flex-col justify-between group overflow-hidden border border-divider hover:border-secondary/30 transition-all duration-500 min-h-[400px] shadow-sm">
+                    <div className="bg-card rounded-[32px] p-8 flex flex-col justify-between group overflow-hidden border border-divider hover:border-secondary/30 transition-all duration-500 min-h-[400px] shadow-sm hover:shadow-md hover:-translate-y-1">
                         <div>
                             <div className="flex gap-2 mb-4">
                                 <span className="w-8 h-8 rounded-full bg-secondary/20 flex items-center justify-center text-secondary">📹</span>
                                 <span className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-500">📅</span>
                             </div>
                             <h3 className="text-2xl font-bold text-foreground mb-3 font-heading">Structured Video Sessions</h3>
-                            <p className="text-muted leading-relaxed">
+                            <p className="text-secondary-text dark:text-muted leading-relaxed">
                                 Built-in scheduling, high-quality video rooms, and collaborative notes ensure your hour is productive and organized.
                             </p>
                         </div>
@@ -104,10 +104,10 @@ export function FeatureBentoSection() {
                     </div>
 
                     {/* Bento Card 3: Full Width (Portfolio) */}
-                    <div className="md:col-span-2 bg-gradient-to-r from-card to-surface rounded-[32px] p-8 md:p-12 flex flex-col md:flex-row items-center justify-between group border border-divider hover:border-primary/20 transition-all duration-500 overflow-hidden shadow-sm">
+                    <div className="md:col-span-2 bg-gradient-to-r from-card to-surface dark:to-surface/50 rounded-[32px] p-8 md:p-12 flex flex-col md:flex-row items-center justify-between group border border-divider hover:border-primary/20 transition-all duration-500 overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1">
                         <div className="md:w-1/2 mb-8 md:mb-0 relative z-10">
                             <h3 className="text-3xl font-bold text-foreground mb-4 font-heading">Build an irrefutable portfolio.</h3>
-                            <p className="text-muted leading-relaxed mb-6">
+                            <p className="text-secondary-text dark:text-muted leading-relaxed mb-6">
                                 Every verified swap acts as a peer endorsement. Prove you know your stuff not with certificates, but with real-world teaching and learning experiences tracked on your profile.
                             </p>
                             <Link href="/signup" className="text-primary font-bold hover:text-secondary underline underline-offset-4 decoration-primary/30 transition-colors">

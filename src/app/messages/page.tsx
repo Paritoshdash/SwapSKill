@@ -5,12 +5,15 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import Image from 'next/image';
+import { completeSession } from '@/actions/sessions';
+import toast from 'react-hot-toast';
 
 export default function MessagesPage() {
     const { user, isAuthenticated, isLoading, refreshUser } = useAuth();
     const router = useRouter();
     const supabase = createClient();
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [sessions, setSessions] = useState<any[]>([]);
     const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
     const [isMobileChatView, setIsMobileChatView] = useState(false);
@@ -57,28 +60,33 @@ export default function MessagesPage() {
         if (!activeSession) return;
         setIsProcessing(true);
 
-        const { error: completeError } = await supabase.rpc('complete_session', {
-            p_session_id: activeSession.id
-        });
+        const result = await completeSession(activeSession.id);
 
-        if (completeError) {
-            console.error("Session completion failed:", completeError);
-            alert("Failed to complete session: " + completeError.message);
+        if (result.error) {
+            console.error("Session completion failed:", result.error);
+            toast.error("Failed to complete session: " + result.error);
             setIsProcessing(false);
             return;
         }
 
         // Insert Review
-        const { error: reviewError } = await supabase.from('reviews').insert([{
-            session_id: activeSession.id,
-            reviewer_id: user.id,
-            reviewee_id: activeSession.provider_id === user.id ? activeSession.seeker_id : activeSession.provider_id,
-            rating: rating,
-            comment: reviewComment
-        }]);
+        if (rating > 0 || reviewComment) {
+            const { error: reviewError } = await supabase.from('reviews').insert([{
+                session_id: activeSession.id,
+                reviewer_id: user.id,
+                reviewee_id: activeSession.provider_id === user.id ? activeSession.seeker_id : activeSession.provider_id,
+                rating: rating,
+                comment: reviewComment
+            }]);
 
-        if (reviewError) {
-            console.error("Review failed but session completed:", reviewError);
+            if (reviewError) {
+                console.error("Review failed but session completed:", reviewError);
+                toast.error("Session completed, but review failed to save.");
+            } else {
+                toast.success("Session completed and review saved!");
+            }
+        } else {
+            toast.success("Session completed successfully!");
         }
 
         // Update local state
@@ -149,7 +157,7 @@ export default function MessagesPage() {
                                         {activeSession.status !== 'completed' && activeSession.seeker_id === user?.id && (
                                             <button
                                                 onClick={() => setShowRatingModal(true)}
-                                                className="bg-primary hover:bg-secondary text-background text-xs font-bold px-4 py-2 rounded-lg transition-all shadow-lg"
+                                                className="bg-primary text-background text-xs font-bold px-4 py-2 rounded-[12px] transition-all duration-300 shadow-[inset_0px_2px_4px_rgba(255,255,255,0.4),inset_0px_-2px_4px_rgba(0,0,0,0.15),0px_4px_10px_rgba(0,0,0,0.1)] hover:-translate-y-[1px] hover:shadow-[inset_0px_3px_6px_rgba(255,255,255,0.5),inset_0px_-3px_6px_rgba(0,0,0,0.2),0px_6px_15px_rgba(0,0,0,0.15)] active:translate-y-[1px] active:scale-[0.98]"
                                             >
                                                 Complete & Rate
                                             </button>
@@ -227,14 +235,14 @@ export default function MessagesPage() {
                         <div className="flex gap-4">
                             <button
                                 onClick={() => setShowRatingModal(false)}
-                                className="flex-1 py-4 px-4 bg-foreground/5 hover:bg-foreground/10 text-foreground font-bold rounded-2xl transition-all border border-divider"
+                                className="flex-1 py-4 px-4 bg-surface text-foreground font-bold rounded-[20px] border-none shadow-[inset_0px_3px_6px_rgba(255,255,255,0.8),inset_0px_-3px_6px_rgba(0,0,0,0.05),0px_6px_15px_rgba(0,0,0,0.05)] hover:-translate-y-[1px] hover:shadow-[inset_0px_4px_8px_rgba(255,255,255,1),inset_0px_-4px_8px_rgba(0,0,0,0.08),0px_8px_20px_rgba(0,0,0,0.08)] active:translate-y-[2px] active:scale-[0.98] transition-all duration-300"
                             >
                                 Not Yet
                             </button>
                             <button
                                 onClick={handleCompleteSession}
                                 disabled={isProcessing}
-                                className="flex-2 py-4 px-8 bg-primary hover:bg-secondary text-background font-bold rounded-2xl transition-all shadow-xl disabled:opacity-50"
+                                className="flex-2 py-4 px-8 bg-primary font-bold text-background rounded-[20px] transition-all duration-300 shadow-[inset_0px_3px_6px_rgba(255,255,255,0.4),inset_0px_-3px_6px_rgba(0,0,0,0.15),0px_6px_15px_rgba(0,0,0,0.1)] hover:-translate-y-[1px] hover:shadow-[inset_0px_4px_8px_rgba(255,255,255,0.5),inset_0px_-4px_8px_rgba(0,0,0,0.2),0px_8px_20px_rgba(0,0,0,0.15)] active:translate-y-[2px] active:scale-[0.98] disabled:opacity-70"
                             >
                                 {isProcessing ? 'Saving...' : 'Complete & Review'}
                             </button>

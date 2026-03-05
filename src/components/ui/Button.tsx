@@ -15,14 +15,14 @@ export function Button({
     href,
     ...props
 }: ButtonProps) {
-    const baseStyles = "inline-flex items-center justify-center rounded-[12px] font-medium transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-bg-base";
+    const baseStyles = "inline-flex items-center justify-center rounded-[20px] font-bold transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background";
 
     const variants = {
-        primary: "bg-primary text-background hover:bg-secondary active:scale-[0.98] shadow-[0_0_15px_rgba(245,178,26,0.3)] hover:shadow-[0_0_25px_rgba(229,142,0,0.5)]",
-        secondary: "bg-transparent text-primary border border-primary hover:bg-primary/10 hover:shadow-[0_0_15px_rgba(245,178,26,0.2)] active:scale-[0.98]",
-        dark: "bg-section text-foreground border border-divider hover:border-primary/50 hover:bg-divider active:scale-[0.98]",
-        outline: "border border-divider text-muted hover:border-primary/50 hover:text-foreground active:scale-[0.98] bg-transparent",
-        danger: "bg-red-600 text-white hover:bg-red-700 active:scale-[0.98]",
+        primary: "bg-primary text-background shadow-[inset_0px_3px_6px_rgba(255,255,255,0.4),inset_0px_-3px_6px_rgba(0,0,0,0.15),0px_6px_15px_rgba(0,0,0,0.1)] hover:-translate-y-[1px] hover:shadow-[inset_0px_4px_8px_rgba(255,255,255,0.5),inset_0px_-4px_8px_rgba(0,0,0,0.2),0px_8px_20px_rgba(0,0,0,0.15)] active:translate-y-[2px] active:scale-[0.98] active:shadow-[inset_0px_2px_4px_rgba(255,255,255,0.3),inset_0px_-2px_4px_rgba(0,0,0,0.1),0px_2px_5px_rgba(0,0,0,0.1)] dark:shadow-[inset_0px_3px_6px_rgba(255,255,255,0.4),inset_0px_-3px_6px_rgba(0,0,0,0.15),0px_6px_15px_rgba(0,0,0,0.1)]",
+        secondary: "bg-surface text-primary border-none shadow-[inset_0px_3px_6px_rgba(245,158,11,0.15),inset_0px_-3px_6px_rgba(0,0,0,0.05),0px_6px_15px_rgba(0,0,0,0.05)] hover:-translate-y-[1px] hover:shadow-[inset_0px_4px_8px_rgba(245,158,11,0.25),inset_0px_-4px_8px_rgba(0,0,0,0.08),0px_8px_20px_rgba(0,0,0,0.08)] active:translate-y-[2px] active:scale-[0.98] active:shadow-[inset_0px_1px_2px_rgba(245,158,11,0.1),inset_0px_-1px_2px_rgba(0,0,0,0.03),0px_2px_5px_rgba(0,0,0,0.05)]",
+        dark: "bg-foreground text-background shadow-[inset_0px_3px_6px_rgba(255,255,255,0.15),inset_0px_-3px_6px_rgba(0,0,0,0.4),0px_6px_15px_rgba(0,0,0,0.1)] hover:-translate-y-[1px] hover:shadow-[inset_0px_4px_8px_rgba(255,255,255,0.2),inset_0px_-4px_8px_rgba(0,0,0,0.5),0px_8px_20px_rgba(0,0,0,0.15)] active:translate-y-[2px] active:scale-[0.98] active:shadow-[inset_0px_1px_2px_rgba(255,255,255,0.1),inset_0px_-1px_2px_rgba(0,0,0,0.3),0px_2px_5px_rgba(0,0,0,0.1)]",
+        outline: "bg-surface text-foreground border-none shadow-[inset_0px_3px_6px_rgba(255,255,255,0.8),inset_0px_-3px_6px_rgba(0,0,0,0.05),0px_6px_15px_rgba(0,0,0,0.05)] hover:-translate-y-[1px] hover:shadow-[inset_0px_4px_8px_rgba(255,255,255,1),inset_0px_-4px_8px_rgba(0,0,0,0.08),0px_8px_20px_rgba(0,0,0,0.08)] active:translate-y-[2px] active:scale-[0.98] active:shadow-[inset_0px_1px_2px_rgba(255,255,255,0.6),inset_0px_-1px_2px_rgba(0,0,0,0.03),0px_2px_5px_rgba(0,0,0,0.05)]",
+        danger: "bg-red-500 text-white shadow-[inset_0px_3px_6px_rgba(255,255,255,0.4),inset_0px_-3px_6px_rgba(0,0,0,0.15),0px_6px_15px_rgba(0,0,0,0.1)] hover:-translate-y-[1px] hover:bg-red-600 hover:shadow-[inset_0px_4px_8px_rgba(255,255,255,0.5),inset_0px_-4px_8px_rgba(0,0,0,0.2),0px_8px_20px_rgba(0,0,0,0.15)] active:translate-y-[2px] active:scale-[0.98]",
     };
 
     const sizes = {
